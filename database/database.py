@@ -1,5 +1,6 @@
 import sqlite3
 import os
+from datetime import datetime
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "students.db")
 
@@ -36,10 +37,20 @@ def create_database():
     )
     """)
 
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS spoof_logs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        date TEXT NOT NULL,
+        time TEXT NOT NULL,
+        reason TEXT NOT NULL,
+        liveness_score REAL NOT NULL
+    )
+    """)
+
     conn.commit()
     conn.close()
     try:
-        print("✅ Database created/verified successfully!")
+        print("[OK] Database created/verified successfully!")
     except UnicodeEncodeError:
         print("[OK] Database created/verified successfully!")
 
@@ -48,14 +59,14 @@ def reset_database():
     cursor = conn.cursor()
     cursor.execute("DROP TABLE IF EXISTS attendance")
     cursor.execute("DROP TABLE IF EXISTS students")
+    cursor.execute("DROP TABLE IF EXISTS spoof_logs")
     conn.commit()
     conn.close()
     create_database()
     try:
-        print("🧹 Database reset successfully!")
+        print("[OK] Database reset successfully!")
     except UnicodeEncodeError:
         print("[OK] Database reset successfully!")
-
 
 def get_all_students():
     conn = get_db_connection()
@@ -73,5 +84,34 @@ def get_student_by_roll_no(roll_no):
     conn.close()
     return dict(row) if row else None
 
+def log_spoof_attempt(reason, liveness_score):
+    now = datetime.now()
+    today_date = now.strftime("%Y-%m-%d")
+    current_time = now.strftime("%H:%M:%S")
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute(
+            """
+            INSERT INTO spoof_logs (date, time, reason, liveness_score)
+            VALUES (?, ?, ?, ?)
+            """,
+            (today_date, current_time, reason, float(liveness_score))
+        )
+        conn.commit()
+    except Exception as e:
+        print(f"Error logging spoof attempt: {e}")
+    finally:
+        conn.close()
+
+def get_spoof_logs(limit=50):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM spoof_logs ORDER BY id DESC LIMIT ?", (limit,))
+    logs = [dict(row) for row in cursor.fetchall()]
+    conn.close()
+    return logs
+
 if __name__ == "__main__":
-    create_database()
+    create_database()

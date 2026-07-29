@@ -4,25 +4,21 @@ ENCODINGS_DIR = "encodings"
 DATABASE_PATH = "database/students.db"
 REPORTS_DIR = "reports"
 
-# Camera
+# Camera & Streaming
 CAMERA_ID = 0
+FRAME_SKIP_INTERVAL = 2  # Run deep model every 2nd frame for smooth 30 FPS stream
 
-# Face Capture
-FACE_IMAGES_REQUIRED = 20
-
-# Recognition
+# Recognition & AI Model
 MATCH_THRESHOLD = 0.60
-
-# AI Model
 MODEL_NAME = "buffalo_l"
-
-# Performance Optimization
 DET_SIZE = (320, 320)
 PROCESSING_SCALE = 0.5
-FRAME_SKIP_INTERVAL = 2
 
-# Anti-Spoofing & Liveness Detection
+# Anti-Spoofing & Liveness Settings
 LIVENESS_ENABLED = True
-LIVENESS_THRESHOLD = 0.55
-EAR_THRESHOLD = 0.21
-FFT_MOIRE_THRESHOLD = 0.60
+LIVENESS_THRESHOLD = 0.65
+AUTO_GENERATE_ENCODINGS = True
+
+# Advanced Challenge-Response Liveness Mode
+EAR_BLINK_THRESHOLD = 0.20
+CHALLENGE_MODE_ENABLED = False
