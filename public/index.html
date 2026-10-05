@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FaceAuth AI — Enterprise Biometric Attendance</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090b10;
+      --card-bg: rgba(18, 22, 34, 0.75);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --primary: #3b82f6;
+      --accent: #10b981;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --gradient: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.6;
+      background-image: 
+        radial-gradient(circle at 15% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 85% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 40%);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Navbar */
+    nav {
+      border-bottom: 1px solid var(--card-border);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(9, 11, 16, 0.8);
+    }
+    .nav-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 72px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .brand-badge {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      background: rgba(59, 130, 246, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      color: #60a5fa;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+    .nav-links {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+    .nav-btn {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-btn:hover {
+      color: var(--text);
+    }
+    .btn-primary {
+      background: #2563eb;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+    }
+    .btn-primary:hover {
+      background: #1d4ed8;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 96px 0 64px;
+      text-align: center;
+    }
+    .badge-hero {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      color: #34d399;
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin-bottom: 24px;
+    }
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      background: #10b981;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #10b981;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.2); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+    .hero h1 {
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 20px;
+    }
+    .hero h1 span {
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero p {
+      max-width: 680px;
+      margin: 0 auto 36px;
+      color: var(--text-muted);
+      font-size: 1.125rem;
+    }
+    .hero-actions {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      padding: 10px 22px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.2s, border 0.2s;
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Tunnel Banner */
+    .tunnel-box {
+      margin-top: 48px;
+      background: rgba(18, 22, 34, 0.85);
+      border: 1px solid rgba(59, 130, 246, 0.35);
+      border-radius: 16px;
+      padding: 24px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      text-align: left;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+    }
+    .tunnel-info h3 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .tunnel-info p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 0;
+    }
+    .tunnel-code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 3px 8px;
+      border-radius: 6px;
+      color: #38bdf8;
+      font-size: 0.85rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Features Grid */
+    .features {
+      padding: 80px 0;
+    }
+    .section-title {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+    .section-title h2 {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    .section-title p {
+      color: var(--text-muted);
+      font-size: 1rem;
+      margin-top: 8px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 28px;
+      backdrop-filter: blur(16px);
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(59, 130, 246, 0.4);
+    }
+    .card-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: rgba(59, 130, 246, 0.12);
+      border: 1px solid rgba(59, 130, 246, 0.24);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      margin-bottom: 18px;
+    }
+    .card h3 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .card p {
+      color: var(--text-muted);
+      font-size: 0.92rem;
+      line-height: 1.55;
+    }
+    .dept-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 14px;
+    }
+    .tag {
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #93c5fd;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--card-border);
+      padding: 40px 0;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav>
+    <div class="container nav-inner">
+      <div class="brand">
+        <span>🛡️ FaceAuth AI</span>
+        <span class="brand-badge">v2.0</span>
+      </div>
+      <div class="nav-links">
+        <a href="#features" class="nav-btn">Features</a>
+        <a href="#departments" class="nav-btn">Branches</a>
+        <a href="https://ninety-feet-brush.loca.lt" target="_blank" class="btn-primary">
+          Launch Live App 🚀
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero container">
+    <div class="badge-hero">
+      <div class="pulse-dot"></div>
+      Deep Learning Biometric Engine Live
+    </div>
+    <h1>Enterprise Attendance &amp; <span>Biometric Authentication</span></h1>
+    <p>
+      High-accuracy face recognition powered by InsightFace 512-D deep embeddings, 
+      real-time anti-spoofing liveness verification, SQLite attendance records, and an ultra-modern Streamlit interface.
+    </p>
+    <div class="hero-actions">
+      <a href="https://ninety-feet-brush.loca.lt" target="_blank" class="btn-primary">
+        Open Live Attendance App
+      </a>
+      <a href="https://github.com/anshubiswasfx-hub/FACE_AUTH" target="_blank" class="btn-secondary">
+        GitHub Repository
+      </a>
+    </div>
+
+    <!-- Live Tunnel Box -->
+    <div class="tunnel-box">
+      <div class="tunnel-info">
+        <h3>⚡ Active Cloud Tunnel Endpoint</h3>
+        <p>Instant access to the running Streamlit server. If prompted by Tunnel Gateway, enter IP password: <span class="tunnel-code">49.43.6.57</span></p>
+      </div>
+      <a href="https://ninety-feet-brush.loca.lt" target="_blank" class="btn-primary" style="white-space: nowrap;">
+        Connect Now &rarr;
+      </a>
+    </div>
+  </section>
+
+  <!-- Features Grid -->
+  <section id="features" class="features container">
+    <div class="section-title">
+      <h2>Engineered for Precision &amp; Speed</h2>
+      <p>State-of-the-art computer vision pipeline designed for educational institutions and corporate security.</p>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <div class="card-icon">🧠</div>
+        <h3>InsightFace Deep Embeddings</h3>
+        <p>Computes 512-dimensional normalized facial vectors with cosine similarity matching, robust across diverse lighting, angles, and occlusions.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🛡️</div>
+        <h3>Real-time Anti-Spoofing</h3>
+        <p>Active liveness detection prevents spoofing via mobile screens, high-res photos, or video replays before marking attendance.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📊</div>
+        <h3>Live Encoding Tracker</h3>
+        <p>Dedicated sidebar and side-panel monitoring tracking encoding percentage, student photo datasets, and instant database synchronization.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📁</div>
+        <h3>Structured Records &amp; Export</h3>
+        <p>Automated SQLite attendance logging with student roll numbers, timestamps, detection confidence, and one-click CSV export.</p>
+      </div>
+      <div class="card" id="departments">
+        <div class="card-icon">🎓</div>
+        <h3>Department Specializations</h3>
+        <p>Pre-configured dropdown support across 7 specialized technical departments:</p>
+        <div class="dept-tags">
+          <span class="tag">CSE</span>
+          <span class="tag">CSE IOT</span>
+          <span class="tag">CSE CYBER</span>
+          <span class="tag">CSE IT</span>
+          <span class="tag">CSE DS</span>
+          <span class="tag">CSE AIML</span>
+          <span class="tag">CSE AIDS</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🎨</div>
+        <h3>Modern Streamlit UI</h3>
+        <p>Clean neutral theme, responsive collapsible sidebar with professional wrap-up drawer, and zero-latency video streaming.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <p>FaceAuth AI &bull; Built with Streamlit, InsightFace, OpenCV, and SQLite &bull; &copy; 2026</p>
+    </div>
+  </footer>
+
+</body>
+</html>
