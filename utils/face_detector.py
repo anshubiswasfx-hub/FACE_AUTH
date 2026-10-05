@@ -7,7 +7,7 @@ def capture_faces(student_folder):
     cap = cv2.VideoCapture(0)
 
     if not cap.isOpened():
-        print("❌ Could not open webcam.")
+        print("[!] Could not open webcam.")
         return False
 
     cascade_path = cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
@@ -15,7 +15,7 @@ def capture_faces(student_folder):
     face_detector = cv2.CascadeClassifier(cascade_path)
 
     if face_detector.empty():
-        print("❌ Failed to load Haar Cascade.")
+        print("[!] Failed to load Haar Cascade.")
         print(cascade_path)
         cap.release()
         return False
@@ -23,7 +23,7 @@ def capture_faces(student_folder):
     image_count = 0
     last_capture = 0
 
-    print("\n📷 Face Capture Started")
+    print("\n[*] Face Capture Started")
     print("Press Q to cancel.")
 
     while True:
@@ -81,11 +81,11 @@ def capture_faces(student_folder):
         cv2.imshow("Student Registration", frame)
 
         if image_count >= 20:
-            print("\n✅ 20 Images Captured")
+            print("\n[+] 20 Images Captured")
             break
 
         if cv2.waitKey(1) & 0xFF == ord("q"):
-            print("\n❌ Capture Cancelled")
+            print("\n[!] Capture Cancelled")
             break
 
     cap.release()

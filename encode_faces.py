@@ -24,13 +24,13 @@ def generate_encodings(progress_callback=None):
     face_database = {}
 
     if not os.path.exists(DATASET_DIR):
-        print(f"❌ Dataset folder '{DATASET_DIR}' does not exist.")
+        print(f"[!] Dataset folder '{DATASET_DIR}' does not exist.")
         return face_database
 
     student_folders = [f for f in os.listdir(DATASET_DIR) if os.path.isdir(os.path.join(DATASET_DIR, f))]
     total_folders = len(student_folders)
 
-    print(f"\n🔍 Scanning {total_folders} registered student folder(s)...\n")
+    print(f"\n[*] Scanning {total_folders} registered student folder(s)...\n")
 
     for idx, student_folder in enumerate(student_folders):
         folder_path = os.path.join(DATASET_DIR, student_folder)
@@ -72,7 +72,7 @@ def generate_encodings(progress_callback=None):
     encodings_path = os.path.join(ENCODINGS_DIR, "face_encodings.pkl")
     joblib.dump(face_database, encodings_path)
 
-    print("\n✅ Face Encoding Completed Successfully!")
+    print("\n[+] Face Encoding Completed Successfully!")
     print(f"Students Encoded : {len(face_database)}")
     return face_database
 

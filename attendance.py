@@ -88,7 +88,7 @@ def export_attendance_report(selected_date=None):
         filename = f"attendance_{selected_date or 'all'}.csv"
         file_path = os.path.join(REPORTS_DIR, filename)
         df.to_csv(file_path, index=False)
-        print(f"📊 Report saved to {file_path}")
+        print(f"[OK] Report saved to {file_path}")
 
     return df
 

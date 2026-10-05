@@ -1,4 +1,11 @@
+import sys
 import os
+
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+if hasattr(sys.stderr, 'reconfigure'):
+    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+
 import time
 import cv2
 import pandas as pd
@@ -7,7 +14,7 @@ from datetime import datetime
 
 # Set Streamlit Page Configuration
 st.set_page_config(
-    page_title="FaceAuth AI Pro - Multi-Theme Enterprise Security",
+    page_title="FaceAuth AI - Enterprise Security",
     page_icon="🛡️",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -25,252 +32,572 @@ from config import AUTO_GENERATE_ENCODINGS
 create_database()
 
 # -------------------------------------------------------------
-# 🎨 MULTI-THEME ENGINE CONFIGURATION
+# 🎨 CLEAN & SIMPLE PROFESSIONAL LIGHT THEME
 # -------------------------------------------------------------
 st.sidebar.markdown("""
-<div style="text-align: center; padding: 10px 0 15px 0;">
-    <h2 style="background: linear-gradient(90deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; margin: 0;">
-        🛡️ FaceAuth AI Pro
+<div style="padding: 2px 4px 12px 4px;">
+    <h2 style="color: #0f172a; font-size: 1.3rem; font-weight: 800; margin: 0; letter-spacing: -0.02em;">
+        FaceAuth AI
     </h2>
-    <span style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); padding: 2px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 700;">v2.5 PRO</span>
 </div>
 """, unsafe_allow_html=True)
 
-theme_choice = st.sidebar.selectbox(
-    "🎨 UI Color Theme",
-    ["🌌 Cyber Neon (Dark)", "🏎️ Midnight Amber (Stealth)", "🪐 Deep Space Mint", "💎 Nordic Frost Glass (Light)"]
-)
-
-# Theme CSS Definitions
-if theme_choice == "🌌 Cyber Neon (Dark)":
-    theme_css = """
-    :root {
-        --bg-canvas: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #070a14 70%, #03050a 100%);
-        --card-bg: rgba(15, 23, 42, 0.70);
-        --card-border: rgba(56, 189, 248, 0.18);
-        --text-primary: #f8fafc;
-        --text-secondary: #94a3b8;
-        --accent-grad: linear-gradient(90deg, #38bdf8 0%, #818cf8 50%, #c084fc 100%);
-        --accent-glow: rgba(56, 189, 248, 0.4);
-        --btn-bg: linear-gradient(90deg, #0284c7 0%, #4f46e5 100%);
-        --sidebar-bg: #070a12;
-    }
-    """
-elif theme_choice == "🏎️ Midnight Amber (Stealth)":
-    theme_css = """
-    :root {
-        --bg-canvas: radial-gradient(circle at 50% 0%, #291e09 0%, #0d0a05 70%, #040301 100%);
-        --card-bg: rgba(24, 20, 15, 0.75);
-        --card-border: rgba(245, 158, 11, 0.22);
-        --text-primary: #fffbeb;
-        --text-secondary: #d97706;
-        --accent-grad: linear-gradient(90deg, #f59e0b 0%, #fbbf24 50%, #ef4444 100%);
-        --accent-glow: rgba(245, 158, 11, 0.4);
-        --btn-bg: linear-gradient(90deg, #d97706 0%, #b45309 100%);
-        --sidebar-bg: #0a0804;
-    }
-    """
-elif theme_choice == "🪐 Deep Space Mint":
-    theme_css = """
-    :root {
-        --bg-canvas: radial-gradient(circle at 50% 0%, #064e3b 0%, #041712 70%, #020c09 100%);
-        --card-bg: rgba(6, 30, 24, 0.75);
-        --card-border: rgba(52, 211, 153, 0.22);
-        --text-primary: #ecfdf5;
-        --text-secondary: #6ee7b7;
-        --accent-grad: linear-gradient(90deg, #34d399 0%, #10b981 50%, #14b8a6 100%);
-        --accent-glow: rgba(52, 211, 153, 0.4);
-        --btn-bg: linear-gradient(90deg, #059669 0%, #0d9488 100%);
-        --sidebar-bg: #03120e;
-    }
-    """
-else:  # 💎 Nordic Frost Glass (Light)
-    theme_css = """
-    :root {
-        --bg-canvas: linear-gradient(135deg, #eef2ff 0%, #f8fafc 50%, #e2e8f0 100%);
-        --card-bg: rgba(255, 255, 255, 0.85);
-        --card-border: rgba(37, 99, 235, 0.18);
-        --text-primary: #0f172a;
-        --text-secondary: #475569;
-        --accent-grad: linear-gradient(90deg, #2563eb 0%, #4f46e5 50%, #7c3aed 100%);
-        --accent-glow: rgba(37, 99, 235, 0.3);
-        --btn-bg: linear-gradient(90deg, #2563eb 0%, #1d4ed8 100%);
-        --sidebar-bg: #f1f5f9;
-    }
-    """
-
-# Inject Dynamic CSS Styling Engine
-st.markdown(f"""
+# Inject High-Contrast Professional Responsive CSS
+st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+    /* 1. Header Bar & Sidebar Wrapup (Collapse/Expand) Controls */
+    header[data-testid="stHeader"],
+    .stAppHeader {
+        background: transparent !important;
+        height: 0px !important;
+        min-height: 0px !important;
+        pointer-events: none !important;
+        display: block !important;
+        visibility: visible !important;
+        overflow: visible !important;
+        z-index: 99999 !important;
+        border: none !important;
+    }
 
-    {theme_css}
+    /* Toolbar must be visible for the expand button, but pointer-events none so it doesn't block */
+    [data-testid="stToolbar"],
+    .stAppToolbar {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        display: flex !important;
+        visibility: visible !important;
+        pointer-events: none !important;
+        height: 0px !important;
+        min-height: 0px !important;
+        overflow: visible !important;
+    }
 
-    html, body, [class*="css"] {{
-        font-family: 'Plus Jakarta Sans', sans-serif;
-    }}
+    /* Expand Sidebar Button (when sidebar is wrapped up / collapsed) */
+    [data-testid="stExpandSidebarButton"],
+    button[data-testid="stExpandSidebarButton"],
+    [data-testid="collapsedControl"],
+    [data-testid="stSidebarCollapsedControl"] {
+        display: inline-flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        position: fixed !important;
+        top: 12px !important;
+        left: 12px !important;
+        z-index: 1000000 !important;
+        width: 36px !important;
+        height: 36px !important;
+        min-width: 36px !important;
+        min-height: 36px !important;
+        background: #ffffff !important;
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 8px !important;
+        color: #0f172a !important;
+        align-items: center !important;
+        justify-content: center !important;
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12) !important;
+        cursor: pointer !important;
+        transition: all 0.15s ease !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
 
-    .stApp {{
-        background: var(--bg-canvas);
-        color: var(--text-primary);
-    }}
-
-    /* Ultra Glassmorphic Cards */
-    .glass-card {{
-        background: var(--card-bg);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        border: 1px solid var(--card-border);
-        border-radius: 20px;
-        padding: 24px;
-        box-shadow: 0 10px 35px 0 rgba(0, 0, 0, 0.3);
-        transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.25s ease, box-shadow 0.25s ease;
-    }}
-    
-    .glass-card:hover {{
-        border-color: var(--accent-glow);
-        transform: translateY(-3px);
-        box-shadow: 0 15px 40px 0 var(--accent-glow);
-    }}
-
-    /* Metrics Grid Card */
-    .metric-container {{
-        background: var(--card-bg);
-        border: 1px solid var(--card-border);
-        border-radius: 18px;
-        padding: 22px;
-        text-align: center;
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
-        backdrop-filter: blur(12px);
-        transition: all 0.25s ease;
-    }}
-    .metric-container:hover {{
-        transform: translateY(-2px);
-        border-color: var(--accent-glow);
-    }}
-    .metric-value {{
-        font-size: 2.6rem;
-        font-weight: 800;
-        background: var(--accent-grad);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        line-height: 1.1;
-    }}
-    .metric-value-alert {{
-        font-size: 2.6rem;
-        font-weight: 800;
-        background: linear-gradient(90deg, #f87171 0%, #ef4444 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        line-height: 1.1;
-    }}
-    .metric-label {{
-        font-size: 0.85rem;
-        font-weight: 700;
-        color: var(--text-secondary);
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        margin-top: 8px;
-    }}
-
-    /* Typography */
-    .header-title {{
-        background: var(--accent-grad);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        font-size: 2.8rem;
-        font-weight: 800;
-        letter-spacing: -0.03em;
-        line-height: 1.2;
-    }}
-    .sub-title {{
-        color: var(--text-secondary);
-        font-size: 1.1rem;
-        font-weight: 400;
-        margin-bottom: 25px;
-    }}
-
-    /* Sidebar Navigation Overhaul */
-    [data-testid="stSidebar"] {{
-        background-color: var(--sidebar-bg);
-        border-right: 1px solid var(--card-border);
-    }}
-
-    /* Custom Button Styling */
-    .stButton>button {{
-        background: var(--btn-bg);
+    [data-testid="stExpandSidebarButton"]:hover,
+    button[data-testid="stExpandSidebarButton"]:hover,
+    [data-testid="collapsedControl"]:hover,
+    [data-testid="stSidebarCollapsedControl"]:hover {
+        background: #0f172a !important;
+        border-color: #0f172a !important;
         color: #ffffff !important;
-        border: none;
-        border-radius: 14px;
-        padding: 10px 24px;
-        font-weight: 700;
-        font-size: 0.95rem;
-        box-shadow: 0 4px 20px var(--accent-glow);
-        transition: all 0.25s ease;
-    }}
-    .stButton>button:hover {{
-        transform: translateY(-2px);
-        box-shadow: 0 8px 30px var(--accent-glow);
-    }}
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.22) !important;
+        transform: scale(1.05) !important;
+    }
 
-    /* Download Buttons */
-    .stDownloadButton>button {{
-        background: var(--btn-bg);
+    [data-testid="stExpandSidebarButton"] svg,
+    button[data-testid="stExpandSidebarButton"] svg,
+    [data-testid="stExpandSidebarButton"] span,
+    button[data-testid="stExpandSidebarButton"] span,
+    [data-testid="collapsedControl"] svg,
+    [data-testid="collapsedControl"] span,
+    [data-testid="stSidebarCollapsedControl"] svg,
+    [data-testid="stSidebarCollapsedControl"] span {
+        color: inherit !important;
+        fill: currentColor !important;
+        font-size: 20px !important;
+        width: 20px !important;
+        height: 20px !important;
+        line-height: 1 !important;
+    }
+
+    /* Inside sidebar: Collapse Button (when sidebar is open) */
+    [data-testid="stSidebarHeader"] {
+        display: flex !important;
+        visibility: visible !important;
+        justify-content: flex-end !important;
+        align-items: center !important;
+        padding: 8px 12px 0 12px !important;
+        height: 40px !important;
+        min-height: 40px !important;
+        background: transparent !important;
+    }
+
+    [data-testid="stSidebarCollapseButton"] {
+        display: flex !important;
+        visibility: visible !important;
+    }
+
+    [data-testid="stSidebarCollapseButton"] button {
+        background: #ffffff !important;
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 8px !important;
+        color: #0f172a !important;
+        width: 32px !important;
+        height: 32px !important;
+        min-width: 32px !important;
+        min-height: 32px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        cursor: pointer !important;
+        transition: all 0.15s ease !important;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05) !important;
+        padding: 0 !important;
+    }
+
+    [data-testid="stSidebarCollapseButton"] button:hover {
+        background: #0f172a !important;
+        border-color: #0f172a !important;
         color: #ffffff !important;
-        border-radius: 14px;
-        font-weight: 700;
-    }}
+        transform: scale(1.05) !important;
+    }
 
-    /* HUD Video Frame Header */
-    .hud-header {{
+    [data-testid="stSidebarCollapseButton"] button svg,
+    [data-testid="stSidebarCollapseButton"] button span {
+        color: inherit !important;
+        fill: currentColor !important;
+        font-size: 18px !important;
+        width: 18px !important;
+        height: 18px !important;
+    }
+
+    /* HIDE ONLY unwanted toolbar items (Deploy button, hamburger menu, status widget, decoration, footer) */
+    [data-testid="stToolbarActions"],
+    [data-testid="stAppDeployButton"],
+    [data-testid="stMainMenu"],
+    [data-testid="stMainMenuButton"],
+    #MainMenu,
+    [data-testid="stStatusWidget"],
+    [data-testid="stDecoration"],
+    footer {
+        display: none !important;
+        visibility: hidden !important;
+        height: 0 !important;
+        width: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+    }
+
+    /* 2. Global Typography & Background */
+    html, body, [class*="css"] {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        color: #0f172a !important;
+    }
+
+    .stApp {
+        background-color: #f8fafc !important;
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+
+    /* 3. ZERO OUT all top spacing across entire viewport */
+    [data-testid="stAppViewContainer"],
+    [data-testid="stAppViewBlockContainer"],
+    section.main,
+    section[data-testid="stSidebar"] {
+        padding-top: 0rem !important;
+        margin-top: 0rem !important;
+    }
+
+    /* Main Container Padding - Room for the floating unwrap button on the left */
+    .block-container,
+    [data-testid="block-container"],
+    [data-testid="stMainBlockContainer"],
+    .main .block-container {
+        max-width: 1350px !important;
+        padding-top: 0.8rem !important;
+        padding-bottom: 2rem !important;
+        padding-left: 3.8rem !important;
+        padding-right: 2rem !important;
+        margin-top: 0rem !important;
+    }
+
+    /* Distinct Visible Sidebar Layout */
+    [data-testid="stSidebar"] {
+        background-color: #f8fafc !important;
+        border-right: 1px solid #e2e8f0 !important;
+    }
+
+    /* Sidebar User Content Padding */
+    [data-testid="stSidebarUserContent"],
+    section[data-testid="stSidebar"] div.stSidebarContent,
+    section[data-testid="stSidebar"] > div {
+        padding-top: 0.2rem !important;
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+        padding-bottom: 1.5rem !important;
+        margin-top: 0rem !important;
+    }
+
+    /* 4. Sidebar Navigation - 100% Equal Length, Responsive to Narrow / Short Sidebar */
+    [data-testid="stSidebar"] [data-testid="stRadio"] {
+        width: 100% !important;
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+    [data-testid="stSidebar"] [data-testid="stRadio"] > label {
+        display: none !important;
+    }
+    [data-testid="stSidebar"] div[role="radiogroup"] {
+        width: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 6px !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    /* Force each option item to take 100% full width */
+    [data-testid="stSidebar"] div[role="radiogroup"] > div {
+        width: 100% !important;
+        min-width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-sizing: border-box !important;
+        background: transparent !important;
+        border: none !important;
+    }
+
+    /* COMPLETE PERMANENT ELIMINATION of radio circle indicators ONLY */
+    [data-testid="stSidebar"] [data-testid="stRadioOption"] input,
+    [data-testid="stSidebar"] [data-testid="stRadioOption"] svg,
+    [data-testid="stSidebar"] [data-testid="stRadioOption"] > div > div:first-child:not([data-testid="stMarkdownContainer"]) {
+        display: none !important;
+        width: 0 !important;
+        height: 0 !important;
+        max-width: 0 !important;
+        max-height: 0 !important;
+        min-width: 0 !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+    }
+
+    /* Tab Button card styling - Resilient to narrow/short widths */
+    [data-testid="stSidebar"] [data-testid="stRadioOption"],
+    [data-testid="stSidebar"] div[role="radiogroup"] label {
+        width: 100% !important;
+        min-width: 100% !important;
+        max-width: 100% !important;
+        height: 42px !important;
+        min-height: 42px !important;
+        max-height: 42px !important;
+        box-sizing: border-box !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        background: #ffffff !important;
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 8px !important;
+        padding: 0 9px !important;
+        margin: 0 !important;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04) !important;
+        transition: all 0.15s ease !important;
+        cursor: pointer !important;
+        overflow: hidden !important;
+    }
+
+    /* Inner container for text */
+    [data-testid="stSidebar"] [data-testid="stRadioOption"] > div {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        gap: 0 !important;
+        overflow: hidden !important;
+    }
+
+    [data-testid="stSidebar"] [data-testid="stRadioOption"] [data-testid="stMarkdownContainer"] {
+        width: 100% !important;
+        min-width: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        overflow: hidden !important;
+    }
+
+    [data-testid="stSidebar"] [data-testid="stRadioOption"] [data-testid="stMarkdownContainer"] p,
+    [data-testid="stSidebar"] [data-testid="stRadioOption"] [data-testid="stMarkdownContainer"] span {
+        color: #334155 !important;
+        font-weight: 600 !important;
+        font-size: 0.84rem !important;
+        letter-spacing: -0.01em !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        line-height: 1.2 !important;
+    }
+
+    /* Hover state - simple clean neutral */
+    [data-testid="stSidebar"] [data-testid="stRadioOption"]:hover {
+        background-color: #f1f5f9 !important;
+        border-color: #cbd5e1 !important;
+    }
+    [data-testid="stSidebar"] [data-testid="stRadioOption"]:hover [data-testid="stMarkdownContainer"] p,
+    [data-testid="stSidebar"] [data-testid="stRadioOption"]:hover [data-testid="stMarkdownContainer"] span {
+        color: #0f172a !important;
+    }
+
+    /* Active / Checked State - Simple Professional Dark Slate */
+    [data-testid="stSidebar"] [data-testid="stRadioOption"][data-selected="true"],
+    [data-testid="stSidebar"] div[data-selected="true"] [data-testid="stRadioOption"],
+    [data-testid="stSidebar"] [data-testid="stRadioOption"]:has(input:checked) {
+        background: #0f172a !important;
+        border-color: #0f172a !important;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12) !important;
+    }
+
+    [data-testid="stSidebar"] [data-testid="stRadioOption"][data-selected="true"] [data-testid="stMarkdownContainer"] p,
+    [data-testid="stSidebar"] [data-testid="stRadioOption"][data-selected="true"] [data-testid="stMarkdownContainer"] span,
+    [data-testid="stSidebar"] div[data-selected="true"] [data-testid="stRadioOption"] [data-testid="stMarkdownContainer"] p,
+    [data-testid="stSidebar"] div[data-selected="true"] [data-testid="stRadioOption"] [data-testid="stMarkdownContainer"] span,
+    [data-testid="stSidebar"] [data-testid="stRadioOption"]:has(input:checked) [data-testid="stMarkdownContainer"] p,
+    [data-testid="stSidebar"] [data-testid="stRadioOption"]:has(input:checked) [data-testid="stMarkdownContainer"] span {
+        color: #ffffff !important;
+        font-weight: 700 !important;
+    }
+
+    /* Sidebar Reset Button */
+    [data-testid="stSidebar"] .stButton > button {
+        background-color: #ffffff !important;
+        color: #dc2626 !important;
+        border: 1px solid #fecaca !important;
+        border-radius: 8px !important;
+        font-weight: 600 !important;
+        font-size: 0.85rem !important;
+        height: 38px !important;
+        transition: all 0.15s ease !important;
+        box-shadow: none !important;
+    }
+    [data-testid="stSidebar"] .stButton > button:hover {
+        background-color: #fef2f2 !important;
+        border-color: #dc2626 !important;
+        color: #b91c1c !important;
+    }
+
+    /* 5. Clean Simple Cards */
+    .glass-card {
+        background: #ffffff !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 8px !important;
+        padding: 18px !important;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03) !important;
+        margin-bottom: 14px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Metrics Grid Cards */
+    .metric-container {
+        background: #ffffff !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 8px !important;
+        padding: 14px 16px !important;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03) !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Headings Top Zero-out */
+    h1, h2, h3, h4, .header-title {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+    .header-title {
+        color: #0f172a !important;
+        font-size: 1.6rem !important;
+        font-weight: 700 !important;
+        letter-spacing: -0.02em !important;
+        margin-bottom: 4px !important;
+    }
+    .sub-title {
+        color: #64748b !important;
+        font-size: 0.88rem !important;
+        font-weight: 500 !important;
+        margin-bottom: 16px !important;
+        margin-top: 0 !important;
+    }
+
+    /* Form Controls */
+    .stTextInput input {
+        border-radius: 6px !important;
+        border: 1px solid #cbd5e1 !important;
+        padding: 8px 12px !important;
+        font-size: 0.9rem !important;
+    }
+    .stTextInput input:focus {
+        border-color: #0f172a !important;
+        box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.1) !important;
+    }
+
+    /* Simple Dark Buttons */
+    .stButton > button {
+        background-color: #0f172a !important;
+        color: #ffffff !important;
+        border: 1px solid #0f172a !important;
+        border-radius: 6px !important;
+        padding: 9px 16px !important;
+        font-weight: 600 !important;
+        font-size: 0.88rem !important;
+        width: 100% !important;
+        height: 42px !important;
+        transition: all 0.15s ease !important;
+    }
+    .stButton > button:hover {
+        background-color: #1e293b !important;
+        border-color: #1e293b !important;
+        color: #ffffff !important;
+        box-shadow: none !important;
+    }
+
+    .stDownloadButton > button {
+        background-color: #0f172a !important;
+        color: #ffffff !important;
+        border: 1px solid #0f172a !important;
+        border-radius: 6px !important;
+        font-weight: 600 !important;
+        width: 100% !important;
+        height: 42px !important;
+    }
+    .stDownloadButton > button:hover {
+        background-color: #1e293b !important;
+        border-color: #1e293b !important;
+    }
+
+    /* Dividers */
+    hr {
+        margin: 6px 0 14px 0 !important;
+        border: none !important;
+        border-top: 1px solid #e2e8f0 !important;
+    }
+
+    /* Video Frame HUD Header */
+    .hud-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        background: rgba(15, 23, 42, 0.85);
-        border: 1px solid var(--card-border);
-        border-radius: 14px 14px 0 0;
-        padding: 10px 18px;
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 0.85rem;
-        color: #38bdf8;
-    }}
-    .live-dot {{
-        height: 10px;
-        width: 10px;
-        background-color: #10b981;
+        background: #0f172a !important;
+        border-radius: 6px 6px 0 0 !important;
+        padding: 9px 14px !important;
+        font-size: 0.85rem !important;
+        color: #ffffff !important;
+        font-weight: 600 !important;
+    }
+    .live-dot {
+        height: 8px;
+        width: 8px;
+        background-color: #22c55e;
         border-radius: 50%;
         display: inline-block;
-        box-shadow: 0 0 10px #10b981;
         margin-right: 6px;
-        animation: pulse 1.5s infinite;
-    }}
-    @keyframes pulse {{
-        0% {{ transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }}
-        70% {{ transform: scale(1); box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }}
-        100% {{ transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }}
-    }}
+    }
+    img {
+        max-width: 100% !important;
+        height: auto !important;
+        border-radius: 0 0 6px 6px !important;
+    }
+
+    /* Responsive Breakpoints */
+    @media (max-width: 992px) {
+        .header-title {
+            font-size: 1.4rem !important;
+        }
+        [data-testid="column"] {
+            width: 100% !important;
+            flex: 1 1 100% !important;
+            min-width: 100% !important;
+        }
+    }
 </style>
 """, unsafe_allow_html=True)
 
 # -------------------------------------------------------------
-# SIDEBAR CONTROLS & NAVIGATION
+# SIDEBAR CONTROLS & NAVIGATION (EXACT SAME LENGTH TABS)
 # -------------------------------------------------------------
+PAGES = ["🏠 Dashboard", "🎥 Live Attendance", "👤 Registration", "📋 Records"]
 page = st.sidebar.radio(
     "Navigation Menu",
-    ["🏠 Dashboard & Analytics", "👤 Student Registration", "⚡ Model Encodings", "🎥 Live Attendance", "📊 Security & Reports"],
-    index=0
+    PAGES,
+    index=0,
+    label_visibility="collapsed"
 )
 
-st.sidebar.markdown("<hr style='border-color: rgba(255, 255, 255, 0.08); margin: 20px 0;'>", unsafe_allow_html=True)
-st.sidebar.markdown("<h4 style='color:var(--text-secondary);'>🎛️ AI Security Controls</h4>", unsafe_allow_html=True)
+# Set Default Backend Threshold Constants
+match_threshold = 0.60
+liveness_threshold = 0.68
 
-match_threshold = st.sidebar.slider("Match Similarity Threshold", min_value=0.40, max_value=0.90, value=0.60, step=0.05)
-liveness_threshold = st.sidebar.slider("Anti-Spoof Strictness", min_value=0.50, max_value=0.90, value=0.68, step=0.03)
+if page == "🎥 Live Attendance":
+    try:
+        all_students_sb = get_all_students()
+        database_sb = load_encodings()
+        total_reg_sb = len(all_students_sb)
+        total_enc_sb = len(database_sb)
+        pct_sb = int((total_enc_sb / total_reg_sb * 100)) if total_reg_sb > 0 else (100 if total_enc_sb > 0 else 0)
 
-st.sidebar.markdown("<hr style='border-color: rgba(255, 255, 255, 0.08); margin: 20px 0;'>", unsafe_allow_html=True)
-st.sidebar.markdown("<h4 style='color:var(--text-secondary);'>⚙️ System Maintenance</h4>", unsafe_allow_html=True)
+        st.sidebar.markdown(f"""
+        <div style="margin-top: 14px; padding-top: 12px; border-top: 1px solid #e2e8f0;">
+            <div style="color: #64748b; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">
+                🧬 Encoding Status
+            </div>
+            <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px 12px; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <span style="font-size: 0.82rem; font-weight: 600; color: #0f172a;">Encoding Done</span>
+                    <span style="font-size: 0.82rem; font-weight: 700; color: {'#16a34a' if pct_sb == 100 else '#d97706'};">{pct_sb}%</span>
+                </div>
+                <div style="background: #f1f5f9; height: 6px; border-radius: 4px; overflow: hidden; margin-bottom: 8px;">
+                    <div style="background: {'#16a34a' if pct_sb == 100 else '#0f172a'}; height: 100%; width: {pct_sb}%; border-radius: 4px;"></div>
+                </div>
+                <div style="font-size: 0.75rem; color: #64748b; display: flex; justify-content: space-between;">
+                    <span>Encoded: <strong style="color: #0f172a;">{total_enc_sb}</strong></span>
+                    <span>Enrolled: <strong style="color: #0f172a;">{total_reg_sb}</strong></span>
+                </div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+    except Exception:
+        pass
 
-if st.sidebar.button("⚠️ Clear & Reset Database", use_container_width=True):
+st.sidebar.markdown("""
+<div style="margin-top: 16px; padding-top: 14px; border-top: 1px solid #e2e8f0;">
+    <div style="color: #64748b; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">
+        ⚙️ Maintenance
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+if st.sidebar.button("⚠️ Reset Database", use_container_width=True):
     reset_database()
     if os.path.exists("encodings"):
         for f in os.listdir("encodings"):
@@ -291,105 +618,174 @@ if st.sidebar.button("⚠️ Clear & Reset Database", use_container_width=True):
     st.rerun()
 
 # -------------------------------------------------------------
-# 🏠 DASHBOARD & ANALYTICS PAGE
+# 🏠 CLEAN SIMPLE DASHBOARD
 # -------------------------------------------------------------
-if page == "🏠 Dashboard & Analytics":
-    st.markdown("<h1 class='header-title'>AI Face Authentication System Pro</h1>", unsafe_allow_html=True)
-    st.markdown("<p class='sub-title'>Enterprise Real-Time Face Verification, 3D Anti-Spoof Protection & Attendance Intelligence</p>", unsafe_allow_html=True)
-    st.markdown("---")
-
+if page == "🏠 Dashboard":
     students = get_all_students()
     today_date = datetime.now().strftime("%Y-%m-%d")
     today_logs = get_attendance_logs(selected_date=today_date)
-    spoof_attempts = get_spoof_logs()
     encodings = load_encodings()
 
+    total_students = len(students)
+    present_count = len(today_logs)
+    absent_count = max(0, total_students - present_count)
+    attendance_rate = round((present_count / total_students * 100), 1) if total_students > 0 else 0.0
+    active_profiles = len(encodings)
+    now_formatted = datetime.now().strftime("%A, %b %d, %Y")
+
+    # 1. Simple Header
+    st.markdown(f"""
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px;">
+        <div>
+            <h1 style="color: #0f172a; font-size: 1.55rem; font-weight: 700; margin: 0; letter-spacing: -0.02em;">FaceAuth AI Dashboard</h1>
+            <p style="color: #64748b; font-size: 0.86rem; margin: 2px 0 0 0;">Attendance Overview & Registered Students</p>
+        </div>
+        <div style="font-size: 0.82rem; color: #475569; background: #ffffff; border: 1px solid #e2e8f0; padding: 6px 12px; border-radius: 6px;">
+            {now_formatted}
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # 2. Four Simple Metric Cards (NO loud blue parts, clean neutral colors)
     c1, c2, c3, c4 = st.columns(4)
     with c1:
         st.markdown(f"""
-        <div class="metric-container">
-            <div class="metric-value">{len(students)}</div>
-            <div class="metric-label">Registered Students</div>
+        <div class="metric-container" style="text-align: left; padding: 14px 16px;">
+            <div style="color: #64748b; font-size: 0.78rem; font-weight: 600; text-transform: uppercase;">Total Students</div>
+            <div style="font-size: 1.75rem; font-weight: 700; color: #0f172a; margin: 2px 0;">{total_students}</div>
+            <div style="color: #64748b; font-size: 0.76rem;">Enrolled in database</div>
         </div>
         """, unsafe_allow_html=True)
 
     with c2:
         st.markdown(f"""
-        <div class="metric-container">
-            <div class="metric-value">{len(today_logs)}</div>
-            <div class="metric-label">Present Today ({today_date})</div>
+        <div class="metric-container" style="text-align: left; padding: 14px 16px;">
+            <div style="color: #64748b; font-size: 0.78rem; font-weight: 600; text-transform: uppercase;">Present Today</div>
+            <div style="font-size: 1.75rem; font-weight: 700; color: #0f172a; margin: 2px 0;">{present_count}</div>
+            <div style="color: #64748b; font-size: 0.76rem;">{attendance_rate}% of enrolled</div>
         </div>
         """, unsafe_allow_html=True)
 
     with c3:
         st.markdown(f"""
-        <div class="metric-container">
-            <div class="metric-value">{len(encodings)}</div>
-            <div class="metric-label">Encoded Profiles</div>
+        <div class="metric-container" style="text-align: left; padding: 14px 16px;">
+            <div style="color: #64748b; font-size: 0.78rem; font-weight: 600; text-transform: uppercase;">Pending / Absent</div>
+            <div style="font-size: 1.75rem; font-weight: 700; color: #0f172a; margin: 2px 0;">{absent_count}</div>
+            <div style="color: #64748b; font-size: 0.76rem;">Awaiting check-in</div>
         </div>
         """, unsafe_allow_html=True)
 
     with c4:
         st.markdown(f"""
-        <div class="metric-container">
-            <div class="metric-value-alert">{len(spoof_attempts)}</div>
-            <div class="metric-label">Blocked Spoof Attacks</div>
+        <div class="metric-container" style="text-align: left; padding: 14px 16px;">
+            <div style="color: #64748b; font-size: 0.78rem; font-weight: 600; text-transform: uppercase;">Face Profiles</div>
+            <div style="font-size: 1.75rem; font-weight: 700; color: #0f172a; margin: 2px 0;">{active_profiles}</div>
+            <div style="color: #64748b; font-size: 0.76rem;">Active encodings</div>
         </div>
         """, unsafe_allow_html=True)
 
-    st.markdown("<br>", unsafe_allow_html=True)
-    
-    col_chart1, col_chart2 = st.columns([1, 1])
-    with col_chart1:
-        st.markdown("<div class='glass-card'>", unsafe_allow_html=True)
-        st.markdown("### 📊 Department Distribution")
+    st.markdown("<div style='height: 12px;'></div>", unsafe_allow_html=True)
+
+    # 3. Two Columns: Department Breakdown & Today's Attendance (NO giant blue bar chart!)
+    col_dept, col_feed = st.columns([1, 1])
+
+    with col_dept:
+        st.markdown("""
+        <div class="glass-card">
+            <h3 style="margin: 0 0 10px 0; font-size: 0.95rem; font-weight: 700; color: #0f172a;">Department Overview</h3>
+        """, unsafe_allow_html=True)
         if students:
             df_stud = pd.DataFrame(students)
             if "department" in df_stud.columns:
-                st.bar_chart(df_stud["department"].value_counts())
+                dept_counts = df_stud["department"].value_counts().reset_index()
+                dept_counts.columns = ["Department", "Count"]
+                for _, row in dept_counts.iterrows():
+                    st.markdown(f"""
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 9px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; margin-bottom: 6px;">
+                        <span style="font-weight: 600; color: #1e293b; font-size: 0.88rem;">{row['Department']}</span>
+                        <span style="font-size: 0.82rem; font-weight: 600; color: #475569; background: #e2e8f0; padding: 2px 8px; border-radius: 4px;">{row['Count']} Students</span>
+                    </div>
+                    """, unsafe_allow_html=True)
         else:
             st.info("No student department data enrolled yet.")
         st.markdown("</div>", unsafe_allow_html=True)
 
-    with col_chart2:
-        st.markdown("<div class='glass-card'>", unsafe_allow_html=True)
-        st.markdown("### 🛡️ Blocked Attack Reasons")
-        if spoof_attempts:
-            df_sp = pd.DataFrame(spoof_attempts)
-            if "reason" in df_sp.columns:
-                st.bar_chart(df_sp["reason"].value_counts())
+    with col_feed:
+        st.markdown("""
+        <div class="glass-card">
+            <h3 style="margin: 0 0 10px 0; font-size: 0.95rem; font-weight: 700; color: #0f172a;">Today's Attendance</h3>
+        """, unsafe_allow_html=True)
+        if today_logs:
+            for log in today_logs[:5]:
+                st.markdown(f"""
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 9px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; margin-bottom: 6px;">
+                    <div>
+                        <div style="font-weight: 600; color: #0f172a; font-size: 0.88rem;">{log['name']}</div>
+                        <div style="font-size: 0.74rem; color: #64748b;">Roll: {log['roll_no']} | {log['department']}</div>
+                    </div>
+                    <div style="font-size: 0.78rem; font-weight: 600; color: #334155; background: #e2e8f0; padding: 2px 8px; border-radius: 4px;">
+                        {log['time']}
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+            if len(today_logs) > 5:
+                st.caption(f"+ {len(today_logs) - 5} more check-ins today.")
         else:
-            st.success("🎉 Zero spoof attack threats logged!")
+            st.markdown("""
+            <div style="text-align: center; padding: 24px 12px; color: #64748b; font-size: 0.88rem;">
+                No attendance recorded yet today.
+            </div>
+            """, unsafe_allow_html=True)
         st.markdown("</div>", unsafe_allow_html=True)
 
-    st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown("### 📋 Enrolled Student Roster")
+    # 4. Student Roster Table
+    st.markdown("""
+    <div class="glass-card">
+        <h3 style="margin: 0 0 10px 0; font-size: 0.95rem; font-weight: 700; color: #0f172a;">Registered Student Roster</h3>
+    """, unsafe_allow_html=True)
     if students:
         df_students = pd.DataFrame(students)
-        st.dataframe(df_students[["id", "roll_no", "name", "department", "created_at"]], use_container_width=True)
+        display_cols = ["roll_no", "name", "department", "created_at"]
+        existing_cols = [c for c in display_cols if c in df_students.columns]
+        df_display = df_students[existing_cols].copy()
+        df_display.columns = [c.replace("_", " ").title() for c in existing_cols]
+        st.dataframe(df_display, use_container_width=True, height=200)
     else:
-        st.info("ℹ️ No students registered yet. Go to 'Student Registration' to enroll new students.")
+        st.markdown("""
+        <div style="text-align: center; padding: 20px; color: #64748b; font-size: 0.88rem;">
+            No students enrolled yet.
+        </div>
+        """, unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
 
 # -------------------------------------------------------------
 # 👤 STUDENT REGISTRATION PAGE (AUTOMATIC ENCODINGS)
 # -------------------------------------------------------------
-elif page == "👤 Student Registration":
+elif page == "👤 Registration":
     st.markdown("<h1 class='header-title'>Student Registration & Auto-Encoding</h1>", unsafe_allow_html=True)
     st.markdown("<p class='sub-title'>Enroll new students with automated face dataset capture and instant deep embedding generation.</p>", unsafe_allow_html=True)
-    st.markdown("---")
+    st.markdown("<hr style='margin: 4px 0 16px 0; border: none; border-top: 1px solid #e2e8f0;'>", unsafe_allow_html=True)
 
     col_form, col_cam = st.columns([1, 1])
 
     with col_form:
-        st.markdown("<div class='glass-card'>", unsafe_allow_html=True)
         st.subheader("📝 Student Profile Information")
-        name = st.text_input("Full Name", placeholder="e.g. Alex Smith")
-        enrollment = st.text_input("Enrollment / Roll Number", placeholder="e.g. EN2026101")
-        branch = st.text_input("Department / Branch", placeholder="e.g. Computer Science")
+        name = st.text_input("Full Name")
+        enrollment = st.text_input("Enrollment / Roll Number")
+        
+        DEPARTMENTS = [
+            "CSE",
+            "CSE IOT",
+            "CSE CYBER",
+            "CSE IT",
+            "CSE DS",
+            "CSE AIML",
+            "CSE AIDS"
+        ]
+        branch = st.selectbox("Department / Branch", options=DEPARTMENTS)
 
-        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
         start_btn = st.button("📷 Start Capture & Auto-Enroll", type="primary", use_container_width=True)
-        st.markdown("</div>", unsafe_allow_html=True)
 
     with col_cam:
         st.subheader("📹 Live Dataset Capture Stream")
@@ -397,64 +793,84 @@ elif page == "👤 Student Registration":
         status_box = st.empty()
 
     if start_btn:
-        if not name.strip() or not enrollment.strip() or not branch.strip():
+        if not name.strip() or not enrollment.strip() or not branch:
             st.error("⚠️ Please fill in all student details before starting capture.")
         else:
             status_box.info("📷 Initializing webcam for face capture...")
             student_folder = os.path.join("dataset", f"{enrollment.strip()}_{name.strip().replace(' ', '_')}")
             os.makedirs(student_folder, exist_ok=True)
 
-            cap = cv2.VideoCapture(0)
-            if not cap.isOpened():
-                st.error("❌ Could not access webcam. Please check hardware connection.")
+            stream = ThreadedWebcam(src=0).start()
+            time.sleep(0.3)
+
+            if not stream.is_opened():
+                status_box.error("❌ Could not access webcam. Please check hardware connection.")
             else:
-                cascade_path = cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
-                face_detector = cv2.CascadeClassifier(cascade_path)
+                # Load face detector safely
+                face_detector = None
+                try:
+                    if hasattr(cv2, 'CascadeClassifier'):
+                        cascade_path = cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
+                        face_detector = cv2.CascadeClassifier(cascade_path)
+                except Exception:
+                    face_detector = None
 
                 image_count = 0
                 last_capture = 0
                 captured_successfully = False
                 progress_bar = st.progress(0)
 
-                while True:
-                    ret, frame = cap.read()
-                    if not ret:
-                        break
+                try:
+                    while True:
+                        grabbed, frame = stream.read()
+                        if not grabbed or frame is None:
+                            time.sleep(0.01)
+                            continue
 
-                    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-                    faces = face_detector.detectMultiScale(gray, scaleFactor=1.2, minNeighbors=5, minSize=(140, 140))
+                        h_img, w_img, _ = frame.shape
+                        faces = []
 
-                    for (x, y, w, h) in faces:
-                        cv2.rectangle(frame, (x, y), (x + w, y + h), (16, 185, 129), 2)
-                        current_time = time.time()
-                        if current_time - last_capture >= 0.35:
-                            pad_w = int(w * 0.25)
-                            pad_h = int(h * 0.25)
-                            h_img, w_img, _ = frame.shape
+                        if face_detector is not None and hasattr(face_detector, 'empty') and not face_detector.empty():
+                            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+                            faces = face_detector.detectMultiScale(gray, scaleFactor=1.2, minNeighbors=5, minSize=(120, 120))
+                        
+                        # Fallback face region if classifier is unavailable
+                        if len(faces) == 0:
+                            cx, cy = w_img // 2, h_img // 2
+                            faces = [(cx - 100, cy - 100, 200, 200)]
 
-                            y1 = max(0, y - pad_h)
-                            y2 = min(h_img, y + h + pad_h)
-                            x1 = max(0, x - pad_w)
-                            x2 = min(w_img, x + w + pad_w)
+                        for (x, y, w, h) in faces:
+                            cv2.rectangle(frame, (x, y), (x + w, y + h), (34, 197, 94), 2)
+                            current_time = time.time()
+                            if current_time - last_capture >= 0.3:
+                                pad_w = int(w * 0.2)
+                                pad_h = int(h * 0.2)
 
-                            face = frame[y1:y2, x1:x2]
-                            if face.size > 0:
-                                image_count += 1
-                                cv2.imwrite(os.path.join(student_folder, f"{image_count:03}.jpg"), face)
-                                last_capture = current_time
-                                progress_bar.progress(image_count / 20)
+                                y1 = max(0, y - pad_h)
+                                y2 = min(h_img, y + h + pad_h)
+                                x1 = max(0, x - pad_w)
+                                x2 = min(w_img, x + w + pad_w)
 
-                    cv2.putText(frame, f"Captured: {image_count}/20", (20, 40),
-                                cv2.FONT_HERSHEY_SIMPLEX, 1, (16, 185, 129), 2)
+                                face = frame[y1:y2, x1:x2]
+                                if face.size > 0:
+                                    image_count += 1
+                                    cv2.imwrite(os.path.join(student_folder, f"{image_count:03}.jpg"), face)
+                                    last_capture = current_time
+                                    progress_bar.progress(min(image_count / 20, 1.0))
 
-                    frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                    frame_window.image(frame_rgb, channels="RGB", use_container_width=True)
+                        cv2.putText(frame, f"Captured: {image_count}/20", (20, 40),
+                                    cv2.FONT_HERSHEY_SIMPLEX, 0.9, (34, 197, 94), 2)
 
-                    if image_count >= 20:
-                        captured_successfully = True
-                        break
+                        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                        frame_window.image(frame_rgb, channels="RGB", use_container_width=True)
 
-                cap.release()
+                        if image_count >= 20:
+                            captured_successfully = True
+                            break
+
+                        time.sleep(0.01)
+                finally:
+                    stream.stop()
 
                 if captured_successfully:
                     success, msg = register_student(name, enrollment, branch, capture_callback=lambda f: True)
@@ -472,174 +888,220 @@ elif page == "👤 Student Registration":
                             encodings = generate_encodings(progress_callback=update_progress)
                             load_encodings()
                             st.success(f"🚀 **Model Encodings Auto-Generated Successfully!** Total profiles encoded: {len(encodings)}")
-                            st.balloons()
                     else:
                         status_box.error(msg)
                 else:
                     status_box.error("❌ Face capture was incomplete.")
 
 # -------------------------------------------------------------
-# ⚡ MODEL ENCODINGS PAGE
-# -------------------------------------------------------------
-elif page == "⚡ Model Encodings":
-    st.markdown("<h1 class='header-title'>Generate Face Encodings</h1>", unsafe_allow_html=True)
-    st.markdown("<p class='sub-title'>Extract InsightFace deep learning embeddings from registered dataset images to update recognition profiles.</p>", unsafe_allow_html=True)
-    st.markdown("---")
-
-    enc = load_encodings()
-    st.write(f"Currently active face profile encodings: **{len(enc)}**")
-
-    if st.button("🚀 Re-Train & Update Encodings Manually", type="primary"):
-        progress_bar = st.progress(0)
-        status_box = st.empty()
-        status_box.info("Scanning dataset and computing 512-d face embeddings...")
-
-        def update_progress(val):
-            progress_bar.progress(val)
-
-        encodings = generate_encodings(progress_callback=update_progress)
-        load_encodings()
-
-        if encodings:
-            status_box.success(f"✅ Successfully updated encodings for {len(encodings)} student(s)!")
-            st.json({k: v["name"] for k, v in encodings.items()})
-        else:
-            status_box.warning("⚠️ No face encodings could be generated. Please make sure students are registered with face photos.")
-
-# -------------------------------------------------------------
-# 🎥 LIVE ATTENDANCE PAGE (LAG-FREE THREADED STREAM)
+# 🎥 LIVE ATTENDANCE PAGE (CLEAN ALIGNED DESIGN)
 # -------------------------------------------------------------
 elif page == "🎥 Live Attendance":
-    st.markdown("<h1 class='header-title'>Real-Time Live Attendance & Anti-Spoofing</h1>", unsafe_allow_html=True)
-    st.markdown("<p class='sub-title'>Zero-lag threaded video verification with 5-frame consecutive stability & 3D Sobel depth analysis.</p>", unsafe_allow_html=True)
-
-    col_b1, col_b2, col_b3 = st.columns(3)
-    with col_b1:
-        st.info("⚡ **Engine**: Threaded Async Stream (30 FPS)")
-    with col_b2:
-        st.success(f"🛡️ **Anti-Spoof**: Active (Strictness={liveness_threshold:.2f})")
-    with col_b3:
-        fps_metric = st.empty()
-        fps_metric.metric("Stream Speed", "-- FPS")
-
-    st.markdown("---")
+    st.markdown("<h1 class='header-title'>Real-Time Attendance Verification</h1>", unsafe_allow_html=True)
+    st.markdown("<p class='sub-title'>Position face towards the camera for automated attendance logging.</p>", unsafe_allow_html=True)
+    st.markdown("<hr style='margin: 4px 0 16px 0; border: none; border-top: 1px solid #e2e8f0;'>", unsafe_allow_html=True)
 
     database = load_encodings()
-    if not database:
-        st.warning("⚠️ No face encodings found! Please register students first.")
-    else:
-        run_cam = st.checkbox("▶️ Start Lag-Free Webcam Verification", value=False)
-        col_video, col_logs = st.columns([3, 2])
-        
-        with col_video:
+    all_students = get_all_students()
+    total_students = len(all_students)
+    total_encoded = len(database)
+    pct = int((total_encoded / total_students * 100)) if total_students > 0 else (100 if total_encoded > 0 else 0)
+
+    # Top Control Bar
+    col_ctrl, col_stats = st.columns([1, 1])
+    with col_ctrl:
+        run_cam = st.toggle("▶️ Activate Camera Verification", value=False, disabled=(not database))
+    with col_stats:
+        if not database:
+            st.warning("⚠️ No face encodings active! Click 'Sync & Re-Generate Encodings' on the side.")
+
+    col_video, col_logs = st.columns([3, 2])
+    
+    with col_video:
+        if not run_cam:
+            st.markdown("""
+            <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 48px 24px; text-align: center;">
+                <div style="font-size: 3rem; margin-bottom: 8px;">📹</div>
+                <h3 style="color: #0f172a; font-weight: 700; margin: 0 0 4px 0; font-size: 1.2rem;">Camera Feed Inactive</h3>
+                <p style="color: #64748b; font-size: 0.88rem; margin: 0;">Toggle "Activate Camera Verification" above to start live face scanning.</p>
+            </div>
+            """, unsafe_allow_html=True)
+        else:
             st.markdown("""
             <div class="hud-header">
-                <div><span class="live-dot"></span> LIVE CAMERA MONITOR</div>
-                <div style="color: #64748b;">AI VERIFICATION HUD</div>
+                <div><span class="live-dot"></span> VERIFYING CAMERA FEED</div>
+                <div style="color: #cbd5e1; font-weight: 500;">LIVE FEED</div>
             </div>
             """, unsafe_allow_html=True)
             frame_window = st.image([])
 
-        with col_logs:
-            st.subheader("📋 Real-Time Authentication Log")
-            log_window = st.empty()
+    with col_logs:
+        st.markdown("""
+        <h3 style="margin: 0 0 8px 0; font-size: 1.05rem; font-weight: 700; color: #0f172a;">
+            📋 Verification Status
+        </h3>
+        """, unsafe_allow_html=True)
+        log_window = st.empty()
+        if not run_cam:
+            log_window.markdown("""
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 14px; margin-bottom: 12px;">
+                <div style="color: #64748b; font-size: 0.85rem; font-weight: 500;">
+                    Camera stream is offline. Activate camera to start real-time verification.
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
 
-        if run_cam:
-            app = get_recognize_app()
-            stream = ThreadedWebcam(src=0).start()
-            time.sleep(0.5)
+        # ---------------------------------------------------------
+        # 🧬 SIDE ENCODINGS STATUS CARD (HOW MUCH ENCODING IS DONE)
+        # ---------------------------------------------------------
+        badge_bg = '#dcfce7' if pct == 100 and total_students > 0 else '#fef3c7'
+        badge_color = '#15803d' if pct == 100 and total_students > 0 else '#b45309'
+        badge_border = '#86efac' if pct == 100 and total_students > 0 else '#fde68a'
+        badge_text = f"{pct}% DONE" if total_students > 0 else "0% DONE"
+        bar_color = '#16a34a' if pct == 100 and total_students > 0 else '#0f172a'
 
-            prev_time = time.time()
-            frame_count = 0
+        st.markdown(f"""<div class="glass-card" style="margin-top: 4px; padding: 16px;">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+<div>
+<h4 style="margin: 0; font-size: 0.95rem; font-weight: 700; color: #0f172a;">🧬 Face Encodings Status</h4>
+<div style="color: #64748b; font-size: 0.75rem; margin-top: 1px;">InsightFace ArcFace 512-D</div>
+</div>
+<span style="background: {badge_bg}; color: {badge_color}; border: 1px solid {badge_border}; padding: 3px 9px; border-radius: 9999px; font-size: 0.78rem; font-weight: 700;">{badge_text}</span>
+</div>
+<div style="background: #f1f5f9; height: 8px; border-radius: 6px; overflow: hidden; margin-bottom: 12px; border: 1px solid #e2e8f0;">
+<div style="background: {bar_color}; height: 100%; width: {pct}%; border-radius: 6px; transition: width 0.3s ease;"></div>
+</div>
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
+<div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px 10px; text-align: center;">
+<div style="font-size: 1.15rem; font-weight: 700; color: #0f172a;">{total_encoded} / {total_students}</div>
+<div style="font-size: 0.72rem; color: #64748b; font-weight: 600; text-transform: uppercase;">Profiles Encoded</div>
+</div>
+<div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px 10px; text-align: center;">
+<div style="font-size: 1.15rem; font-weight: 700; color: {'#16a34a' if pct == 100 and total_students > 0 else '#d97706'};">{'Ready' if pct == 100 and total_students > 0 else 'Pending'}</div>
+<div style="font-size: 0.72rem; color: #64748b; font-weight: 600; text-transform: uppercase;">Engine Status</div>
+</div>
+</div>""", unsafe_allow_html=True)
 
+        # Enrolled Profiles List
+        if all_students:
+            st.markdown("""<div style="color: #64748b; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px;">Enrolled Profiles & Vectors</div>
+<div style="max-height: 160px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; padding-right: 4px; margin-bottom: 12px;">""", unsafe_allow_html=True)
+            for s in all_students:
+                is_enc = s['roll_no'] in database
+                badge_html = """<span style="background: #dcfce7; color: #15803d; border: 1px solid #86efac; padding: 2px 7px; border-radius: 6px; font-size: 0.72rem; font-weight: 700;">✅ Encoded</span>""" if is_enc else """<span style="background: #fef3c7; color: #b45309; border: 1px solid #fde68a; padding: 2px 7px; border-radius: 6px; font-size: 0.72rem; font-weight: 700;">⏳ Pending</span>"""
+                st.markdown(f"""<div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px 10px; display: flex; justify-content: space-between; align-items: center;">
+<div style="overflow: hidden; padding-right: 8px;">
+<div style="font-size: 0.85rem; font-weight: 600; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{s['name']}</div>
+<div style="font-size: 0.74rem; color: #64748b;">Roll: {s['roll_no']} &bull; {s['department']}</div>
+</div>
+<div style="flex-shrink: 0;">{badge_html}</div>
+</div>""", unsafe_allow_html=True)
+            st.markdown("</div>", unsafe_allow_html=True)
+        else:
+            st.markdown("""<div style="color: #64748b; font-size: 0.8rem; padding: 8px 0; margin-bottom: 8px;">No registered students found in database.</div>""", unsafe_allow_html=True)
+
+        # Sync / Re-Generate Encodings button
+        if st.button("🔄 Sync & Re-Generate Encodings", use_container_width=True):
             try:
-                while run_cam:
-                    grabbed, frame = stream.read()
-                    if not grabbed or frame is None:
-                        time.sleep(0.01)
-                        continue
+                with st.spinner("Compiling face encodings from dataset..."):
+                    db_new = generate_encodings()
+                    load_encodings()
+                st.success(f"✅ Success! Encoded {len(db_new)} student profile(s).")
+                time.sleep(0.5)
+                st.rerun()
+            except Exception as e:
+                st.error(f"⚠️ Encoding error: {e}")
 
-                    curr_time = time.time()
-                    frame_count += 1
-                    if curr_time - prev_time >= 1.0:
-                        fps = frame_count / (curr_time - prev_time)
-                        fps_metric.metric("Stream Speed", f"{fps:.1f} FPS")
-                        prev_time = curr_time
-                        frame_count = 0
+        st.markdown("</div>", unsafe_allow_html=True)
 
-                    frame, recognized = process_frame(frame, database, app, match_thresh=match_threshold)
+    if run_cam:
+        app = get_recognize_app()
+        stream = ThreadedWebcam(src=0).start()
+        time.sleep(0.3)
 
-                    if recognized:
-                        msgs = [f"🎯 **{r['name']}** ({r['score']:.2f}) — {r['attendance_msg']}" for r in recognized]
-                        log_window.success("\n\n".join(msgs))
-                    else:
-                        log_window.info("🔍 Monitoring video stream... Present authentic face to mark attendance.")
+        last_logged_name = ""
+        last_logged_time = 0
 
-                    frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                    frame_window.image(frame_rgb, channels="RGB", use_container_width=True)
-
+        try:
+            while run_cam:
+                grabbed, frame = stream.read()
+                if not grabbed or frame is None:
                     time.sleep(0.01)
-            finally:
-                stream.stop()
+                    continue
+
+                frame, recognized = process_frame(frame, database, app, match_thresh=match_threshold)
+
+                new_marks = [r for r in recognized if r.get("is_new_mark", False)]
+                already_marked = [r for r in recognized if not r.get("is_new_mark", False)]
+
+                if new_marks:
+                    r = new_marks[0]
+                    last_logged_name = r['name']
+                    last_logged_time = time.time()
+                    log_window.markdown(f"""
+                    <div style="text-align: center; padding: 20px; background: #ecfdf5; border: 2px solid #10b981; border-radius: 12px; margin-bottom: 10px;">
+                        <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                        <h3 style="color: #065f46; font-weight: 700; margin-top: 8px; font-size: 1.2rem;">Attendance Marked!</h3>
+                        <p style="color: #047857; font-weight: 600; margin: 0;">Student: <strong>{last_logged_name}</strong></p>
+                        <small style="color: #059669; font-weight: 500;">Ready for next student...</small>
+                    </div>
+                    """, unsafe_allow_html=True)
+                elif already_marked:
+                    r = already_marked[0]
+                    if time.time() - last_logged_time > 3.0:
+                        log_window.markdown(f"""
+                        <div style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 14px 18px; border-radius: 8px; color: #334155; font-weight: 600;">
+                            ℹ️ <strong>{r['name']}</strong> is already marked present today.
+                            <br><small style="font-weight: 500; color: #64748b;">Ready for next student...</small>
+                        </div>
+                        """, unsafe_allow_html=True)
+                elif time.time() - last_logged_time > 4.0:
+                    log_window.markdown("""
+                    <div style="background: #fefce8; border: 1px solid #fde047; padding: 14px 18px; border-radius: 8px; color: #854d0e; font-weight: 600;">
+                        🟡 <strong>SCANNING CAMERA...</strong> Present face to mark attendance.
+                    </div>
+                    """, unsafe_allow_html=True)
+
+                frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                frame_window.image(frame_rgb, channels="RGB", use_container_width=True)
+                time.sleep(0.01)
+        finally:
+            stream.stop()
 
 # -------------------------------------------------------------
-# 📊 SECURITY & REPORTS PAGE
+# 📋 ATTENDANCE RECORDS PAGE
 # -------------------------------------------------------------
-elif page == "📊 Security & Reports":
-    st.markdown("<h1 class='header-title'>Security Logs & Attendance Analytics</h1>", unsafe_allow_html=True)
-    st.markdown("<p class='sub-title'>View attendance logs, track blocked spoof attack attempts, and export CSV reports.</p>", unsafe_allow_html=True)
-    st.markdown("---")
+elif page == "📋 Records":
+    st.markdown("<h1 class='header-title'>Student Attendance Records & History</h1>", unsafe_allow_html=True)
+    st.markdown("<p class='sub-title'>View student attendance logs, filter by date, and export CSV reports.</p>", unsafe_allow_html=True)
+    st.markdown("<hr style='margin: 4px 0 16px 0; border: none; border-top: 1px solid #e2e8f0;'>", unsafe_allow_html=True)
 
-    tab_att, tab_spoof = st.tabs(["📋 Attendance Records", "🛡️ Blocked Spoof Attack Logs"])
+    col_filter, col_export = st.columns([2, 1])
+    with col_filter:
+        selected_date = st.date_input("Filter Attendance by Date", value=datetime.now().date())
 
-    with tab_att:
-        col_filter, col_export = st.columns([2, 1])
-        with col_filter:
-            selected_date = st.date_input("Filter Attendance by Date", value=datetime.now().date())
+    date_str = selected_date.strftime("%Y-%m-%d")
+    logs = get_attendance_logs(selected_date=date_str)
 
-        date_str = selected_date.strftime("%Y-%m-%d")
-        logs = get_attendance_logs(selected_date=date_str)
-
-        with col_export:
-            st.write("")
-            st.write("")
-            if logs:
-                df = pd.DataFrame(logs)
-                csv_data = df.to_csv(index=False).encode('utf-8')
-                st.download_button(
-                    label="📥 Export Attendance CSV",
-                    data=csv_data,
-                    file_name=f"attendance_{date_str}.csv",
-                    mime="text/csv",
-                    type="primary",
-                    use_container_width=True
-                )
-
+    with col_export:
+        st.markdown("<div style='height: 28px;'></div>", unsafe_allow_html=True)
         if logs:
-            st.markdown(f"### Attendance Logs ({date_str})")
-            st.dataframe(pd.DataFrame(logs), use_container_width=True)
-        else:
-            st.info(f"ℹ️ No attendance records logged for {date_str}.")
+            df = pd.DataFrame(logs)
+            csv_data = df.to_csv(index=False).encode('utf-8')
+            st.download_button(
+                label="📥 Export Attendance CSV",
+                data=csv_data,
+                file_name=f"attendance_{date_str}.csv",
+                mime="text/csv",
+                type="primary",
+                use_container_width=True
+            )
 
-    with tab_spoof:
-        spoofs = get_spoof_logs(limit=100)
-        col_s1, col_s2 = st.columns([2, 1])
-        with col_s1:
-            st.markdown("### Blocked Spoof Attack Threats")
-        with col_s2:
-            if spoofs:
-                df_sp = pd.DataFrame(spoofs)
-                csv_sp = df_sp.to_csv(index=False).encode('utf-8')
-                st.download_button(
-                    label="📥 Export Spoof Logs CSV",
-                    data=csv_sp,
-                    file_name=f"spoof_threats_{datetime.now().strftime('%Y-%m-%d')}.csv",
-                    mime="text/csv",
-                    type="secondary",
-                    use_container_width=True
-                )
-
-        if spoofs:
-            st.dataframe(pd.DataFrame(spoofs), use_container_width=True)
-        else:
-            st.success("🎉 No spoof attacks detected yet!")
+    if logs:
+        st.markdown(f"### Attendance Records ({date_str})")
+        st.dataframe(pd.DataFrame(logs), use_container_width=True)
+    else:
+        st.info(f"ℹ️ No attendance records logged for {date_str}.")

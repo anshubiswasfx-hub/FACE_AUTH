@@ -322,30 +322,30 @@ class LivenessDetector:
         if bezel_found:
             final_liveness_score = min(final_liveness_score, 0.25)
             track_data["live_counter"] = 0
-            reason = "SPOOF: SMARTPHONE / SCREEN FRAME DETECTED"
+            reason = "VERIFYING: HOLD STILL"
         elif movement_score <= 0.10:
             final_liveness_score = min(final_liveness_score, 0.30)
             track_data["live_counter"] = 0
-            reason = "SPOOF: STATIC PHOTO ATTACK"
+            reason = "VERIFYING: RE-ALIGN FACE"
         elif sobel_score <= 0.30:
             final_liveness_score = min(final_liveness_score, 0.35)
             track_data["live_counter"] = 0
-            reason = "SPOOF: 2D FLAT PHOTO / PRINT DETECTED"
+            reason = "VERIFYING: HOLD STILL"
         elif texture_score < 0.50:
             track_data["live_counter"] = 0
-            reason = "SPOOF: DIGITAL SCREEN MOIRE GRID"
+            reason = "VERIFYING: SCANNING"
         elif color_score < 0.50:
             track_data["live_counter"] = 0
-            reason = "SPOOF: SCREEN GLARE / COLOR DISTORTION"
+            reason = "VERIFYING: SCANNING"
         elif final_liveness_score >= 0.68:
             track_data["live_counter"] += 1
             if track_data["live_counter"] < 5:
-                reason = f"VERIFYING LIVENESS ({track_data['live_counter']}/5)"
+                reason = f"VERIFYING ({track_data['live_counter']}/5)"
             else:
-                reason = "REAL LIVE HUMAN"
+                reason = "VERIFIED REAL FACE"
         else:
             track_data["live_counter"] = 0
-            reason = "SPOOF / UNAUTHENTIC PRESENTATION"
+            reason = "VERIFYING: RE-ALIGN FACE"
 
         # REAL classification REQUIRES passing 5 consecutive live frames!
         is_real = (final_liveness_score >= 0.68) and (track_data["live_counter"] >= 5) and (not bezel_found)

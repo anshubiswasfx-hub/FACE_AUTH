@@ -70,36 +70,41 @@ def draw_sleek_bbox(img, bbox, color, label, subtext):
     x1, y1, x2, y2 = bbox
     h_orig, w_orig = img.shape[:2]
 
-    # Draw main bounding box
-    cv2.rectangle(img, (x1, y1), (x2, y2), color, 2)
+    # Calculate face center and radius axes for circular face ring
+    cx, cy = (x1 + x2) // 2, (y1 + y2) // 2
+    rx = int((x2 - x1) * 0.60)
+    ry = int((y2 - y1) * 0.68)
 
-    # Sleek reticle corners
-    line_len = max(10, int(min(x2 - x1, y2 - y1) * 0.2))
-    # Top-Left
-    cv2.line(img, (x1, y1), (x1 + line_len, y1), color, 4)
-    cv2.line(img, (x1, y1), (x1, y1 + line_len), color, 4)
-    # Top-Right
-    cv2.line(img, (x2, y1), (x2 - line_len, y1), color, 4)
-    cv2.line(img, (x2, y1), (x2, y1 + line_len), color, 4)
-    # Bottom-Left
-    cv2.line(img, (x1, y2), (x1 + line_len, y2), color, 4)
-    cv2.line(img, (x1, y2), (x1, y2 - line_len), color, 4)
-    # Bottom-Right
-    cv2.line(img, (x2, y2), (x2 - line_len, y2), color, 4)
-    cv2.line(img, (x2, y2), (x2, y2 - line_len), color, 4)
+    # Base smooth circular ring around face
+    cv2.ellipse(img, (cx, cy), (rx, ry), 0, 0, 360, color, 2, cv2.LINE_AA)
+
+    # Completing scanning arc circle overlay (300 degree arc)
+    cv2.ellipse(img, (cx, cy), (rx, ry), 0, -90, 270, color, 4, cv2.LINE_AA)
+
+    # Sleek reticle corners around bbox
+    line_len = max(10, int(min(x2 - x1, y2 - y1) * 0.18))
+    cv2.line(img, (x1, y1), (x1 + line_len, y1), color, 3, cv2.LINE_AA)
+    cv2.line(img, (x1, y1), (x1, y1 + line_len), color, 3, cv2.LINE_AA)
+    cv2.line(img, (x2, y1), (x2 - line_len, y1), color, 3, cv2.LINE_AA)
+    cv2.line(img, (x2, y1), (x2, y1 + line_len), color, 3, cv2.LINE_AA)
+    cv2.line(img, (x1, y2), (x1 + line_len, y2), color, 3, cv2.LINE_AA)
+    cv2.line(img, (x1, y2), (x1, y2 - line_len), color, 3, cv2.LINE_AA)
+    cv2.line(img, (x2, y2), (x2 - line_len, y2), color, 3, cv2.LINE_AA)
+    cv2.line(img, (x2, y2), (x2, y2 - line_len), color, 3, cv2.LINE_AA)
 
     # Top Pill Header
-    (w_lbl, h_lbl), _ = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.55, 2)
+    display_label = f"✔ {label}" if "MATCHED" in label else label
+    (w_lbl, h_lbl), _ = cv2.getTextSize(display_label, cv2.FONT_HERSHEY_SIMPLEX, 0.55, 2)
     header_y1 = max(0, y1 - h_lbl - 12)
     cv2.rectangle(img, (x1, header_y1), (x1 + w_lbl + 16, y1), color, -1)
-    cv2.putText(img, label, (x1 + 8, y1 - 6), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (255, 255, 255), 2)
+    cv2.putText(img, display_label, (x1 + 8, y1 - 6), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (255, 255, 255), 2, cv2.LINE_AA)
 
     # Bottom Subtext Badge
     if subtext:
         (w_sub, h_sub), _ = cv2.getTextSize(subtext, cv2.FONT_HERSHEY_SIMPLEX, 0.45, 1)
         sub_y1 = min(h_orig - 5, y2 + h_sub + 8)
         cv2.rectangle(img, (x1, y2), (x1 + w_sub + 12, sub_y1), (15, 23, 42), -1)
-        cv2.putText(img, subtext, (x1 + 6, sub_y1 - 4), cv2.FONT_HERSHEY_SIMPLEX, 0.45, color, 1)
+        cv2.putText(img, subtext, (x1 + 6, sub_y1 - 4), cv2.FONT_HERSHEY_SIMPLEX, 0.45, color, 1, cv2.LINE_AA)
 
 def process_frame(frame, database, app=None, match_thresh=MATCH_THRESHOLD):
     global _encodings_matrix, _encodings_keys, _database_cache
@@ -170,34 +175,33 @@ def process_frame(frame, database, app=None, match_thresh=MATCH_THRESHOLD):
                 liveness_score, is_live, liveness_info = liveness_detector.evaluate(frame, [x1, y1, x2, y2])
 
             if not is_live:
-                color = (0, 0, 239)  # Crimson Red
-                reason_str = liveness_info.get('reason', 'Fake Face')
-                label = f"SPOOF ATTACK ({liveness_score:.2f})"
-                subtext = f"Reason: {reason_str}"
-                
-                # Log spoof attempt once per 3 seconds to avoid DB spam
-                import time
-                curr_t = time.time()
-                if curr_t - _last_spoof_log_time > 3.0 and "VERIFYING" not in reason_str:
-                    log_spoof_attempt(reason_str, liveness_score)
-                    _last_spoof_log_time = curr_t
+                color = (0, 215, 255)  # Vibrant Yellow BGR
+                label = "VERIFYING..."
+                subtext = "Face Verification Active"
             elif best_score >= match_thresh:
-                color = (16, 185, 129)  # Emerald Green
-                label = f"VERIFIED: {best_name} ({best_score:.2f})"
-                subtext = f"Liveness: {liveness_score:.2f} | ID: {best_enrollment}"
-                
                 success, msg, student_info = mark_attendance(best_enrollment)
+                if success:
+                    color = (34, 197, 94)  # Emerald Green
+                    label = f"MATCHED: {best_name}"
+                    subtext = "Attendance Marked!"
+                    is_new = True
+                else:
+                    color = (50, 160, 235)  # Warm Amber BGR
+                    label = f"PRESENT: {best_name}"
+                    subtext = "Already Marked Today"
+                    is_new = False
+                
                 new_recognized.append({
                     "enrollment": best_enrollment,
                     "name": best_name,
                     "score": best_score,
-                    "liveness_score": liveness_score,
-                    "attendance_msg": msg
+                    "attendance_msg": msg,
+                    "is_new_mark": is_new
                 })
             else:
-                color = (245, 158, 11)  # Amber Yellow
-                label = f"UNKNOWN FACE ({max(0, best_score):.2f})"
-                subtext = f"Liveness: {liveness_score:.2f} | Unregistered"
+                color = (225, 29, 72)  # Rose Red
+                label = "UNKNOWN"
+                subtext = "Unregistered Face"
 
             new_detections.append({
                 "bbox": [x1, y1, x2, y2],
@@ -220,12 +224,12 @@ def run_recognition():
     database = load_encodings()
 
     if not database:
-        print("❌ No face encodings found! Please register students first.")
+        print("[!] No face encodings found! Please register students first.")
         return
 
-    print(f"✅ Loaded {len(database)} student encoding(s)")
+    print(f"[+] Loaded {len(database)} student encoding(s)")
     cap = cv2.VideoCapture(0)
-    print("📷 Webcam Started (Press 'q' to exit)...")
+    print("[*] Webcam Started (Press 'q' to exit)...")
 
     while True:
         ret, frame = cap.read()
@@ -235,7 +239,7 @@ def run_recognition():
         frame, recognized = process_frame(frame, database, app)
 
         for item in recognized:
-            print(f"🎯 {item['attendance_msg']}")
+            print(f"[*] {item['attendance_msg']}")
 
         cv2.imshow("AI Face Authentication & Attendance System", frame)
 

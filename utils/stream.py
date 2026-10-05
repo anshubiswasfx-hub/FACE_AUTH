@@ -9,7 +9,11 @@ class ThreadedWebcam:
     """
     def __init__(self, src=0, name="ThreadedWebcam"):
         self.src = src
-        self.cap = cv2.VideoCapture(self.src)
+        # Try DirectShow first on Windows for instant, smooth startup
+        self.cap = cv2.VideoCapture(self.src, cv2.CAP_DSHOW)
+        if not self.cap.isOpened():
+            self.cap = cv2.VideoCapture(self.src)
+
         if not self.cap.isOpened():
             self.status = False
             self.frame = None
