@@ -18,3 +18,5 @@ ENV/
 # Reports & Temp Outputs
 reports/
 *.log
+*.exe
+

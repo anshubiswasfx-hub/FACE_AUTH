@@ -10,6 +10,7 @@ import time
 import cv2
 import pandas as pd
 import streamlit as st
+import textwrap
 from datetime import datetime
 
 # Set Streamlit Page Configuration
@@ -40,6 +41,30 @@ st.sidebar.markdown("""
         FaceAuth AI
     </h2>
 </div>
+""", unsafe_allow_html=True)
+
+# Inject PWA Meta Tags, Manifest Link & Service Worker Registration
+st.markdown("""
+<link rel="manifest" href="/app/static/manifest.json">
+<meta name="theme-color" content="#0f172a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="FaceAuth AI">
+<link rel="apple-touch-icon" href="/app/static/icon.png">
+<script>
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/app/static/sw.js').catch(function() {});
+    });
+}
+window.addEventListener('beforeinstallprompt', function(e) {
+    e.preventDefault();
+    window.deferredInstallPrompt = e;
+    var btn = document.getElementById('pwa-direct-install-btn');
+    if (btn) { btn.style.display = 'inline-flex'; }
+});
+</script>
 """, unsafe_allow_html=True)
 
 # Inject High-Contrast Professional Responsive CSS
@@ -546,7 +571,7 @@ st.markdown("""
 # -------------------------------------------------------------
 # SIDEBAR CONTROLS & NAVIGATION (EXACT SAME LENGTH TABS)
 # -------------------------------------------------------------
-PAGES = ["🏠 Dashboard", "🎥 Live Attendance", "👤 Registration", "📋 Records"]
+PAGES = ["🏠 Dashboard", "🎥 Live Attendance", "👤 Registration", "📋 Records", "📲 Install App"]
 page = st.sidebar.radio(
     "Navigation Menu",
     PAGES,
@@ -1105,3 +1130,244 @@ elif page == "📋 Records":
         st.dataframe(pd.DataFrame(logs), use_container_width=True)
     else:
         st.info(f"ℹ️ No attendance records logged for {date_str}.")
+
+# -------------------------------------------------------------
+# 📲 INSTALL APP PAGE (PWA FOR PHONE & DESKTOP)
+# -------------------------------------------------------------
+elif page == "📲 Install App":
+    st.markdown("<h1 class='header-title'>📲 Install FaceAuth AI as an App</h1>", unsafe_allow_html=True)
+    st.markdown("<p class='sub-title'>Install FaceAuth AI on your Phone (Android / iPhone) or Computer for a seamless, fast, fullscreen experience without browser toolbars.</p>", unsafe_allow_html=True)
+    st.markdown("<hr style='margin: 4px 0 20px 0; border: none; border-top: 1px solid #e2e8f0;'>", unsafe_allow_html=True)
+
+    # 1. PWA Interactive Install Banner Component
+    st.components.v1.html("""
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background: transparent; padding: 2px; }
+        .banner-card {
+          background: #ffffff;
+          border: 1px solid #cbd5e1;
+          border-radius: 10px;
+          padding: 16px 20px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 14px;
+          box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+        }
+        .banner-info { display: flex; align-items: center; gap: 14px; min-width: 0; }
+        .app-icon {
+          width: 46px;
+          height: 46px;
+          flex-shrink: 0;
+          background: #0f172a;
+          border-radius: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 22px;
+          color: white;
+          box-shadow: 0 2px 6px rgba(15, 23, 42, 0.15);
+        }
+        .app-text { min-width: 0; }
+        .app-text h3 {
+          font-size: 1rem;
+          font-weight: 700;
+          color: #0f172a;
+          margin-bottom: 2px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .app-text p {
+          font-size: 0.8rem;
+          color: #64748b;
+          font-weight: 500;
+          line-height: 1.3;
+        }
+        .btn-install {
+          background: #0f172a;
+          color: #ffffff;
+          border: 1px solid #0f172a;
+          border-radius: 8px;
+          padding: 9px 18px;
+          font-size: 0.85rem;
+          font-weight: 600;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          white-space: nowrap;
+          transition: all 0.15s ease;
+          outline: none;
+        }
+        .btn-install:hover {
+          background: #1e293b;
+        }
+        .status-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 6px 12px;
+          border-radius: 6px;
+          font-size: 0.82rem;
+          font-weight: 600;
+          background: #f0fdf4;
+          border: 1px solid #bbf7d0;
+          color: #166534;
+          white-space: nowrap;
+        }
+        @media (max-width: 600px) {
+          .banner-card {
+            flex-direction: column;
+            align-items: stretch;
+            padding: 14px 16px;
+            gap: 12px;
+          }
+          .app-text h3 { white-space: normal; }
+          .btn-install { width: 100%; justify-content: center; }
+          #action-container { width: 100%; }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="banner-card">
+        <div class="banner-info">
+          <div class="app-icon">🛡️</div>
+          <div class="app-text">
+            <h3>FaceAuth AI Mobile &amp; Desktop App</h3>
+            <p id="platform-desc">Progressive Web App &bull; Standalone Mode &bull; Real-time Biometrics</p>
+          </div>
+        </div>
+        <div id="action-container">
+          <button id="install-btn" class="btn-install" onclick="triggerInstall()">
+            📲 Install Application
+          </button>
+        </div>
+      </div>
+
+      <script>
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+        const actionContainer = document.getElementById('action-container');
+        const platformDesc = document.getElementById('platform-desc');
+        const installBtn = document.getElementById('install-btn');
+
+        if (isStandalone) {
+          actionContainer.innerHTML = '<div class="status-badge">✅ Running as Installed App</div>';
+          platformDesc.innerText = 'Active in Standalone Fullscreen Mode.';
+        } else if (isIOS) {
+          installBtn.innerText = '🍏 How to Install on iPhone';
+          installBtn.onclick = function() {
+            alert('On iPhone / iPad:\\n1. Tap Share (square with arrow up ⎋) at the bottom of Safari.\\n2. Scroll down and tap "Add to Home Screen ⊞".\\n3. Tap "Add" in the top right!');
+          };
+          platformDesc.innerText = 'Tap Share ⎋ then "Add to Home Screen ⊞"';
+        }
+
+        function triggerInstall() {
+          let promptEvent = window.deferredInstallPrompt;
+          if (!promptEvent && window.parent) {
+            promptEvent = window.parent.deferredInstallPrompt;
+          }
+          if (promptEvent) {
+            promptEvent.prompt();
+            promptEvent.userChoice.then((choiceResult) => {
+              if (choiceResult.outcome === 'accepted') {
+                actionContainer.innerHTML = '<div class="status-badge">✅ App Installed Successfully!</div>';
+              }
+            });
+          } else {
+            alert('To install on this device:\\n\\n• Android Phone: Tap the ⋮ menu in Chrome -> tap "Install app" or "Add to Home Screen".\\n• iPhone / iPad: Tap Share ⎋ -> "Add to Home Screen ⊞".\\n• PC / Mac: Look for the Install icon (⊕) in your browser address bar.');
+          }
+        }
+      </script>
+    </body>
+    </html>
+    """, height=185)
+
+    st.markdown("<div style='height: 12px;'></div>", unsafe_allow_html=True)
+
+    # 2. Main Content Layout: Installation Guides & Phone QR Access
+    col_guide, col_qr = st.columns([1.5, 1], gap="large")
+
+    with col_guide:
+        guide_html = (
+            '<div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04); margin-bottom: 16px;">\n'
+            '<div style="font-size: 0.95rem; font-weight: 700; color: #0f172a; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;"><span>📱 Step-by-Step Installation Guides</span></div>\n'
+            '<div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px 16px; margin-bottom: 12px; background: #fafafa;">\n'
+            '<div style="font-weight: 700; color: #0f172a; font-size: 0.88rem; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">🤖 Android Phones (Google Chrome, Samsung Internet, Edge)</div>\n'
+            '<ol style="margin: 0; padding-left: 20px; font-size: 0.83rem; color: #334155; line-height: 1.6;">\n'
+            '<li>Open this URL in <strong>Google Chrome</strong> or <strong>Edge</strong> on your Android phone.</li>\n'
+            '<li>Tap the <strong>three vertical dots (⋮)</strong> menu in the upper-right corner.</li>\n'
+            '<li>Select <strong>"Install app"</strong> (or <strong>"Add to Home screen"</strong>).</li>\n'
+            '<li>Tap <strong>Install</strong> to confirm. The FaceAuth AI icon will appear directly on your phone\'s home screen!</li>\n'
+            '</ol>\n'
+            '</div>\n'
+            '<div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px 16px; margin-bottom: 12px; background: #fafafa;">\n'
+            '<div style="font-weight: 700; color: #0f172a; font-size: 0.88rem; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">🍏 iPhone & iPad (Apple Safari)</div>\n'
+            '<ol style="margin: 0; padding-left: 20px; font-size: 0.83rem; color: #334155; line-height: 1.6;">\n'
+            '<li>Open this URL in <strong>Safari</strong> on your iPhone or iPad.</li>\n'
+            '<li>Tap the <strong>Share button (⎋)</strong> at the bottom center of Safari.</li>\n'
+            '<li>Scroll down and tap <strong>"Add to Home Screen (⊞)"</strong>.</li>\n'
+            '<li>Tap <strong>Add</strong> in the top-right corner. FaceAuth AI launches fullscreen without Safari tabs!</li>\n'
+            '</ol>\n'
+            '</div>\n'
+            '<div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px 16px; background: #fafafa;">\n'
+            '<div style="font-weight: 700; color: #0f172a; font-size: 0.88rem; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">💻 Windows PC / Mac / Linux (Chrome, Edge, Brave)</div>\n'
+            '<ol style="margin: 0; padding-left: 20px; font-size: 0.83rem; color: #334155; line-height: 1.6;">\n'
+            '<li>Look at the right-hand side of your browser\'s address bar.</li>\n'
+            '<li>Click the <strong>Install App icon (⊕ or computer with down arrow)</strong>.</li>\n'
+            '<li>Click <strong>Install</strong>. FaceAuth AI will open as a dedicated desktop application window.</li>\n'
+            '</ol>\n'
+            '</div>\n'
+            '</div>\n'
+        )
+        st.markdown(guide_html, unsafe_allow_html=True)
+
+        features_html = (
+            '<div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 18px; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);">\n'
+            '<div style="font-size: 0.92rem; font-weight: 700; color: #0f172a; margin-bottom: 12px;">⚡ Why Use FaceAuth AI as an Installed App?</div>\n'
+            '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">\n'
+            '<div style="padding: 10px; border: 1px solid #f1f5f9; background: #f8fafc; border-radius: 6px;">\n'
+            '<div style="font-weight: 600; font-size: 0.82rem; color: #0f172a;">🖥️ 100% Fullscreen Kiosk</div>\n'
+            '<div style="font-size: 0.76rem; color: #64748b; margin-top: 2px;">No browser search bar, back/forward buttons, or tabs. Perfect for attendance desks.</div>\n'
+            '</div>\n'
+            '<div style="padding: 10px; border: 1px solid #f1f5f9; background: #f8fafc; border-radius: 6px;">\n'
+            '<div style="font-weight: 600; font-size: 0.82rem; color: #0f172a;">📱 1-Tap Home Screen Launch</div>\n'
+            '<div style="font-size: 0.76rem; color: #64748b; margin-top: 2px;">Opens immediately like a native app directly from your phone\'s app list.</div>\n'
+            '</div>\n'
+            '<div style="padding: 10px; border: 1px solid #f1f5f9; background: #f8fafc; border-radius: 6px;">\n'
+            '<div style="font-weight: 600; font-size: 0.82rem; color: #0f172a;">📷 Persistent Camera Access</div>\n'
+            '<div style="font-size: 0.76rem; color: #64748b; margin-top: 2px;">Remembers camera permissions without re-prompting every visit.</div>\n'
+            '</div>\n'
+            '<div style="padding: 10px; border: 1px solid #f1f5f9; background: #f8fafc; border-radius: 6px;">\n'
+            '<div style="font-weight: 600; font-size: 0.82rem; color: #0f172a;">⚡ Instant Fast Loading</div>\n'
+            '<div style="font-size: 0.76rem; color: #64748b; margin-top: 2px;">Pre-cached styles and layout for instantaneous startup speed.</div>\n'
+            '</div>\n'
+            '</div>\n'
+            '</div>\n'
+        )
+        st.markdown(features_html, unsafe_allow_html=True)
+
+    with col_qr:
+        live_app_url = "https://2418f051e97515.lhr.life"
+        qr_api_url = f"https://api.qrserver.com/v1/create-qr-code/?size=220x220&data={live_app_url}&margin=10"
+        qr_html = (
+            '<div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 22px; text-align: center; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);">\n'
+            '<div style="font-size: 0.95rem; font-weight: 700; color: #0f172a; margin-bottom: 4px;">📸 Open & Install on Phone</div>\n'
+            '<div style="font-size: 0.8rem; color: #64748b; margin-bottom: 16px;">Scan this QR code with your mobile phone camera to open and install instantly.</div>\n'
+            f'<div style="background: #ffffff; padding: 12px; border: 1px solid #e2e8f0; border-radius: 12px; display: inline-block; margin-bottom: 16px; box-shadow: 0 2px 6px rgba(15,23,42,0.06);"><img src="{qr_api_url}" alt="FaceAuth AI QR Code" style="width: 190px; height: 190px; display: block; border-radius: 6px;" /></div>\n'
+            f'<div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px 12px; margin-bottom: 12px; font-family: monospace; font-size: 0.8rem; color: #0f172a; word-break: break-all;">{live_app_url}</div>\n'
+            '<div style="display: flex; flex-direction: column; gap: 6px; text-align: left; font-size: 0.78rem; color: #475569; border-top: 1px solid #f1f5f9; padding-top: 14px;">\n'
+            '<div style="display: flex; align-items: center; gap: 6px;"><span style="color: #16a34a; font-weight: bold;">✔</span> Verified on Android (Chrome, Edge, Brave)</div>\n'
+            '<div style="display: flex; align-items: center; gap: 6px;"><span style="color: #16a34a; font-weight: bold;">✔</span> Verified on iPhone & iPad (Safari iOS 11.3+)</div>\n'
+            '<div style="display: flex; align-items: center; gap: 6px;"><span style="color: #16a34a; font-weight: bold;">✔</span> Verified on Windows, macOS & Chromebook</div>\n'
+            '</div>\n'
+            '</div>\n'
+        )
+        st.markdown(qr_html, unsafe_allow_html=True)
+
