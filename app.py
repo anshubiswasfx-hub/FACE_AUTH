@@ -9,6 +9,7 @@ if hasattr(sys.stderr, 'reconfigure'):
 import time
 import cv2
 import pandas as pd
+import numpy as np
 import streamlit as st
 import textwrap
 from datetime import datetime
@@ -809,13 +810,56 @@ elif page == "👤 Registration":
         ]
         branch = st.selectbox("Department / Branch", options=DEPARTMENTS)
 
-        st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
-        start_btn = st.button("📷 Start Capture & Auto-Enroll", type="primary", use_container_width=True)
+        reg_cam_source = st.radio(
+            "Camera Source:",
+            ["📱 Phone / Device Camera (Browser)", "💻 Laptop Hardware Webcam (Live Stream)"],
+            horizontal=True
+        )
+
+        st.markdown("<div style='height: 8px;'></div>", unsafe_allow_html=True)
+        if reg_cam_source == "💻 Laptop Hardware Webcam (Live Stream)":
+            start_btn = st.button("📷 Start Laptop Webcam & Auto-Enroll", type="primary", use_container_width=True)
+        else:
+            start_btn = False
 
     with col_cam:
-        st.subheader("📹 Live Dataset Capture Stream")
-        frame_window = st.image([])
+        st.subheader("📹 Face Capture & Enrollment")
         status_box = st.empty()
+
+        if reg_cam_source == "📱 Phone / Device Camera (Browser)":
+            st.info("📱 **Phone Camera Active**: Use your phone's front or back camera directly. Tap capture below to take a photo and enroll.")
+            phone_photo = st.camera_input("📸 Take Photo with Phone Camera to Register")
+            if phone_photo is not None:
+                if not name.strip() or not enrollment.strip() or not branch:
+                    st.error("⚠️ Please fill in Full Name, Enrollment Number, and Department above before capturing.")
+                else:
+                    file_bytes = np.asarray(bytearray(phone_photo.read()), dtype=np.uint8)
+                    frame = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
+                    if frame is not None:
+                        student_folder = os.path.join("dataset", f"{enrollment.strip()}_{name.strip().replace(' ', '_')}")
+                        os.makedirs(student_folder, exist_ok=True)
+                        h_img, w_img, _ = frame.shape
+                        cv2.imwrite(os.path.join(student_folder, "001.jpg"), frame)
+                        cx, cy = w_img // 2, h_img // 2
+                        box_size = min(h_img, w_img) // 2
+                        face_crop = frame[max(0, cy - box_size):min(h_img, cy + box_size), max(0, cx - box_size):min(w_img, cx + box_size)]
+                        if face_crop.size > 0:
+                            for idx in range(2, 11):
+                                cv2.imwrite(os.path.join(student_folder, f"{idx:03}.jpg"), face_crop)
+                        
+                        success, msg = register_student(name, enrollment, branch, capture_callback=lambda f: True)
+                        if success:
+                            st.success(f"🎉 Student **{name}** ({enrollment}) registered successfully from phone camera!")
+                            if AUTO_GENERATE_ENCODINGS:
+                                with st.spinner("⚡ Compiling 512-D face encodings..."):
+                                    encodings = generate_encodings()
+                                    load_encodings()
+                                st.success(f"🚀 Model Encodings Generated! Total profiles: {len(encodings)}")
+                                st.balloons()
+                        else:
+                            st.error(msg)
+        else:
+            frame_window = st.image([])
 
     if start_btn:
         if not name.strip() or not enrollment.strip() or not branch:
@@ -933,9 +977,17 @@ elif page == "🎥 Live Attendance":
     pct = int((total_encoded / total_students * 100)) if total_students > 0 else (100 if total_encoded > 0 else 0)
 
     # Top Control Bar
-    col_ctrl, col_stats = st.columns([1, 1])
+    col_ctrl, col_stats = st.columns([1.3, 1])
     with col_ctrl:
-        run_cam = st.toggle("▶️ Activate Camera Verification", value=False, disabled=(not database))
+        att_cam_source = st.radio(
+            "Select Camera Source:",
+            ["📱 Phone / Device Camera (Browser)", "💻 Laptop Hardware Webcam (Live Stream)"],
+            horizontal=True
+        )
+        if att_cam_source == "💻 Laptop Hardware Webcam (Live Stream)":
+            run_cam = st.toggle("▶️ Activate Hardware Webcam Stream", value=False, disabled=(not database))
+        else:
+            run_cam = False
     with col_stats:
         if not database:
             st.warning("⚠️ No face encodings active! Click 'Sync & Re-Generate Encodings' on the side.")
@@ -943,22 +995,68 @@ elif page == "🎥 Live Attendance":
     col_video, col_logs = st.columns([3, 2])
     
     with col_video:
-        if not run_cam:
-            st.markdown("""
-            <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 48px 24px; text-align: center;">
-                <div style="font-size: 3rem; margin-bottom: 8px;">📹</div>
-                <h3 style="color: #0f172a; font-weight: 700; margin: 0 0 4px 0; font-size: 1.2rem;">Camera Feed Inactive</h3>
-                <p style="color: #64748b; font-size: 0.88rem; margin: 0;">Toggle "Activate Camera Verification" above to start live face scanning.</p>
-            </div>
-            """, unsafe_allow_html=True)
-        else:
+        if att_cam_source == "📱 Phone / Device Camera (Browser)":
             st.markdown("""
             <div class="hud-header">
-                <div><span class="live-dot"></span> VERIFYING CAMERA FEED</div>
-                <div style="color: #cbd5e1; font-weight: 500;">LIVE FEED</div>
+                <div><span class="live-dot"></span> PHONE / DEVICE CAMERA</div>
+                <div style="color: #cbd5e1; font-weight: 500;">DEVICE CAM</div>
             </div>
             """, unsafe_allow_html=True)
-            frame_window = st.image([])
+            st.info("📱 **Phone Camera Active**: Take a selfie or capture face with your phone to mark attendance.")
+            phone_att_photo = st.camera_input("📸 Capture Face with Phone to Mark Attendance")
+            if phone_att_photo is not None:
+                file_bytes = np.asarray(bytearray(phone_att_photo.read()), dtype=np.uint8)
+                frame = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
+                if frame is not None:
+                    app = get_recognize_app()
+                    frame, recognized = process_frame(frame, database, app, match_thresh=match_threshold)
+                    
+                    frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                    st.image(frame_rgb, use_container_width=True)
+
+                    new_marks = [r for r in recognized if r.get("is_new_mark", False)]
+                    already_marked = [r for r in recognized if not r.get("is_new_mark", False)]
+                    
+                    if new_marks:
+                        r = new_marks[0]
+                        st.markdown(f"""
+                        <div style="text-align: center; padding: 18px; background: #ecfdf5; border: 2px solid #10b981; border-radius: 12px; margin-top: 10px;">
+                            <h3 style="color: #065f46; font-weight: 700; margin: 0 0 6px 0; font-size: 1.25rem;">✅ Attendance Marked!</h3>
+                            <p style="color: #047857; font-weight: 600; margin: 0; font-size: 1rem;">Student: <strong>{r['name']}</strong></p>
+                            <small style="color: #059669; font-weight: 500;">Confidence: {r.get('confidence', 0):.2f} &bull; Marked via Phone Camera</small>
+                        </div>
+                        """, unsafe_allow_html=True)
+                        st.balloons()
+                    elif already_marked:
+                        r = already_marked[0]
+                        st.markdown(f"""
+                        <div style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 14px 18px; border-radius: 8px; color: #334155; font-weight: 600; margin-top: 10px;">
+                            ℹ️ <strong>{r['name']}</strong> is already marked present today.
+                        </div>
+                        """, unsafe_allow_html=True)
+                    else:
+                        st.markdown("""
+                        <div style="background: #fef2f2; border: 1px solid #fecaca; padding: 14px 18px; border-radius: 8px; color: #991b1b; font-weight: 600; margin-top: 10px;">
+                            ❌ No enrolled face detected or match confidence below threshold. Please face the phone camera directly.
+                        </div>
+                        """, unsafe_allow_html=True)
+        else:
+            if not run_cam:
+                st.markdown("""
+                <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 48px 24px; text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: 8px;">📹</div>
+                    <h3 style="color: #0f172a; font-weight: 700; margin: 0 0 4px 0; font-size: 1.2rem;">Camera Feed Inactive</h3>
+                    <p style="color: #64748b; font-size: 0.88rem; margin: 0;">Toggle "Activate Hardware Webcam Stream" above to start live face scanning.</p>
+                </div>
+                """, unsafe_allow_html=True)
+            else:
+                st.markdown("""
+                <div class="hud-header">
+                    <div><span class="live-dot"></span> VERIFYING CAMERA FEED</div>
+                    <div style="color: #cbd5e1; font-weight: 500;">LIVE FEED</div>
+                </div>
+                """, unsafe_allow_html=True)
+                frame_window = st.image([])
 
     with col_logs:
         st.markdown("""
