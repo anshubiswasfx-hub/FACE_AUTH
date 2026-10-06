@@ -1452,7 +1452,7 @@ elif page == "📲 Install App":
         st.markdown(features_html, unsafe_allow_html=True)
 
     with col_qr:
-        live_app_url = "https://auto-waiver-mime-avenue.trycloudflare.com"
+        live_app_url = "https://faceverification.streamlit.app"
         qr_api_url = f"https://api.qrserver.com/v1/create-qr-code/?size=220x220&data={live_app_url}&margin=10"
         qr_html = (
             '<div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 22px; text-align: center; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);">\n'
