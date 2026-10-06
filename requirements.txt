@@ -47,4 +47,4 @@ watchdog==6.0.0
 websockets==16.1
 insightface
 onnxruntime
-
+joblib
