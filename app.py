@@ -260,8 +260,11 @@ st.markdown("""
         margin-top: 0rem !important;
     }
 
-    /* Distinct Visible Sidebar Layout */
-    [data-testid="stSidebar"] {
+    /* Distinct Visible Sidebar Layout with Fixed Width */
+    [data-testid="stSidebar"],
+    section[data-testid="stSidebar"] {
+        min-width: 270px !important;
+        width: 270px !important;
         background-color: #f8fafc !important;
         border-right: 1px solid #e2e8f0 !important;
     }
@@ -277,17 +280,14 @@ st.markdown("""
         margin-top: 0rem !important;
     }
 
-    /* 4. Sidebar Navigation - 100% Equal Length, Responsive to Narrow / Short Sidebar */
-    [data-testid="stSidebar"] [data-testid="stRadio"] {
+    /* 4. Sidebar Navigation - Full Width Responsive Button Cards */
+    [data-testid="stSidebar"] [data-testid="stRadio"],
+    [data-testid="stSidebar"] [data-testid="stRadioGroup"],
+    [data-testid="stSidebar"] div[role="radiogroup"],
+    [data-testid="stSidebar"] .stRadio > div,
+    [data-testid="stSidebar"] [data-testid="stRadio"] > div {
         width: 100% !important;
-        margin-top: 0 !important;
-        padding-top: 0 !important;
-    }
-    [data-testid="stSidebar"] [data-testid="stRadio"] > label {
-        display: none !important;
-    }
-    [data-testid="stSidebar"] div[role="radiogroup"] {
-        width: 100% !important;
+        min-width: 100% !important;
         display: flex !important;
         flex-direction: column !important;
         gap: 6px !important;
@@ -295,125 +295,125 @@ st.markdown("""
         margin: 0 !important;
     }
 
-    /* Force each option item to take 100% full width */
-    [data-testid="stSidebar"] div[role="radiogroup"] > div {
+    [data-testid="stSidebar"] [data-testid="stRadio"] > label {
+        display: none !important;
+    }
+
+    /* Force each option container to take 100% full width */
+    [data-testid="stSidebar"] [data-testid="stRadioGroup"] > div,
+    [data-testid="stSidebar"] div[role="radiogroup"] > div,
+    [data-testid="stSidebar"] .stRadio > div > div {
         width: 100% !important;
         min-width: 100% !important;
-        max-width: 100% !important;
+        display: block !important;
         margin: 0 !important;
         padding: 0 !important;
         box-sizing: border-box !important;
-        background: transparent !important;
-        border: none !important;
     }
 
-    /* COMPLETE PERMANENT ELIMINATION of radio circle indicators ONLY */
-    [data-testid="stSidebar"] [data-testid="stRadioOption"] input,
-    [data-testid="stSidebar"] [data-testid="stRadioOption"] svg,
-    [data-testid="stSidebar"] [data-testid="stRadioOption"] > div > div:first-child:not([data-testid="stMarkdownContainer"]) {
-        display: none !important;
-        width: 0 !important;
-        height: 0 !important;
-        max-width: 0 !important;
-        max-height: 0 !important;
-        min-width: 0 !important;
-        min-height: 0 !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        border: none !important;
-        opacity: 0 !important;
-        visibility: hidden !important;
-        pointer-events: none !important;
-    }
-
-    /* Tab Button card styling - Resilient to narrow/short widths */
+    /* Tab Button card styling */
     [data-testid="stSidebar"] [data-testid="stRadioOption"],
+    [data-testid="stSidebar"] [data-testid="stRadioGroup"] label,
     [data-testid="stSidebar"] div[role="radiogroup"] label {
         width: 100% !important;
         min-width: 100% !important;
-        max-width: 100% !important;
-        height: 42px !important;
-        min-height: 42px !important;
-        max-height: 42px !important;
+        height: 44px !important;
+        min-height: 44px !important;
         box-sizing: border-box !important;
         display: flex !important;
+        flex-direction: row !important;
         align-items: center !important;
         justify-content: flex-start !important;
         background: #ffffff !important;
         border: 1px solid #cbd5e1 !important;
         border-radius: 8px !important;
-        padding: 0 9px !important;
+        padding: 0 14px !important;
         margin: 0 !important;
         box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04) !important;
         transition: all 0.15s ease !important;
         cursor: pointer !important;
-        overflow: hidden !important;
     }
 
-    /* Inner container for text */
+    /* Hide the radio circle / dot cleanly */
+    [data-testid="stSidebar"] [data-testid="stRadioOption"] input {
+        display: none !important;
+    }
+    [data-testid="stSidebar"] [data-testid="stRadioOption"] > div > div:first-child:not(:only-child) {
+        display: none !important;
+    }
+
+    /* Inner flex text container */
     [data-testid="stSidebar"] [data-testid="stRadioOption"] > div {
         width: 100% !important;
-        min-width: 0 !important;
-        max-width: 100% !important;
         display: flex !important;
         align-items: center !important;
         justify-content: flex-start !important;
         padding: 0 !important;
         margin: 0 !important;
-        gap: 0 !important;
-        overflow: hidden !important;
     }
 
-    [data-testid="stSidebar"] [data-testid="stRadioOption"] [data-testid="stMarkdownContainer"] {
-        width: 100% !important;
-        min-width: 0 !important;
-        display: flex !important;
-        align-items: center !important;
-        overflow: hidden !important;
-    }
-
-    [data-testid="stSidebar"] [data-testid="stRadioOption"] [data-testid="stMarkdownContainer"] p,
-    [data-testid="stSidebar"] [data-testid="stRadioOption"] [data-testid="stMarkdownContainer"] span {
-        color: #334155 !important;
+    /* Navigation Label Typography - Always Visible */
+    [data-testid="stSidebar"] [data-testid="stRadioOption"] p,
+    [data-testid="stSidebar"] [data-testid="stRadioOption"] span,
+    [data-testid="stSidebar"] [data-testid="stRadioOption"] label,
+    [data-testid="stSidebar"] [data-testid="stRadioOption"] div[data-testid="stMarkdownContainer"] p,
+    [data-testid="stSidebar"] [data-testid="stRadioOption"] div[data-testid="stMarkdownContainer"] span {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+        font-size: 0.9rem !important;
         font-weight: 600 !important;
-        font-size: 0.84rem !important;
+        color: #1e293b !important;
         letter-spacing: -0.01em !important;
         margin: 0 !important;
         padding: 0 !important;
         white-space: nowrap !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
-        line-height: 1.2 !important;
+        display: inline-block !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        line-height: 1.4 !important;
     }
 
-    /* Hover state - simple clean neutral */
+    /* Hover state */
     [data-testid="stSidebar"] [data-testid="stRadioOption"]:hover {
         background-color: #f1f5f9 !important;
-        border-color: #cbd5e1 !important;
+        border-color: #94a3b8 !important;
     }
-    [data-testid="stSidebar"] [data-testid="stRadioOption"]:hover [data-testid="stMarkdownContainer"] p,
-    [data-testid="stSidebar"] [data-testid="stRadioOption"]:hover [data-testid="stMarkdownContainer"] span {
+    [data-testid="stSidebar"] [data-testid="stRadioOption"]:hover p,
+    [data-testid="stSidebar"] [data-testid="stRadioOption"]:hover span {
         color: #0f172a !important;
     }
 
-    /* Active / Checked State - Simple Professional Dark Slate */
+    /* Active / Selected State - Dark Slate Pill */
     [data-testid="stSidebar"] [data-testid="stRadioOption"][data-selected="true"],
+    [data-testid="stSidebar"] [data-testid="stRadioOption"]:has(input:checked),
     [data-testid="stSidebar"] div[data-selected="true"] [data-testid="stRadioOption"],
-    [data-testid="stSidebar"] [data-testid="stRadioOption"]:has(input:checked) {
+    [data-testid="stSidebar"] div[aria-checked="true"] [data-testid="stRadioOption"] {
         background: #0f172a !important;
         border-color: #0f172a !important;
-        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12) !important;
+        box-shadow: 0 2px 4px rgba(15, 23, 42, 0.15) !important;
     }
 
-    [data-testid="stSidebar"] [data-testid="stRadioOption"][data-selected="true"] [data-testid="stMarkdownContainer"] p,
-    [data-testid="stSidebar"] [data-testid="stRadioOption"][data-selected="true"] [data-testid="stMarkdownContainer"] span,
-    [data-testid="stSidebar"] div[data-selected="true"] [data-testid="stRadioOption"] [data-testid="stMarkdownContainer"] p,
-    [data-testid="stSidebar"] div[data-selected="true"] [data-testid="stRadioOption"] [data-testid="stMarkdownContainer"] span,
-    [data-testid="stSidebar"] [data-testid="stRadioOption"]:has(input:checked) [data-testid="stMarkdownContainer"] p,
-    [data-testid="stSidebar"] [data-testid="stRadioOption"]:has(input:checked) [data-testid="stMarkdownContainer"] span {
+    [data-testid="stSidebar"] [data-testid="stRadioOption"][data-selected="true"] p,
+    [data-testid="stSidebar"] [data-testid="stRadioOption"][data-selected="true"] span,
+    [data-testid="stSidebar"] [data-testid="stRadioOption"]:has(input:checked) p,
+    [data-testid="stSidebar"] [data-testid="stRadioOption"]:has(input:checked) span,
+    [data-testid="stSidebar"] div[data-selected="true"] [data-testid="stRadioOption"] p,
+    [data-testid="stSidebar"] div[data-selected="true"] [data-testid="stRadioOption"] span,
+    [data-testid="stSidebar"] div[aria-checked="true"] [data-testid="stRadioOption"] p,
+    [data-testid="stSidebar"] div[aria-checked="true"] [data-testid="stRadioOption"] span {
         color: #ffffff !important;
         font-weight: 700 !important;
     }
+
+    [data-testid="stSidebar"] [data-testid="stRadioOption"][data-selected="true"]:hover,
+    [data-testid="stSidebar"] [data-testid="stRadioOption"]:has(input:checked):hover {
+        background: #0f172a !important;
+        border-color: #0f172a !important;
+    }
+    [data-testid="stSidebar"] [data-testid="stRadioOption"][data-selected="true"]:hover p,
+    [data-testid="stSidebar"] [data-testid="stRadioOption"]:has(input:checked):hover p {
+        color: #ffffff !important;
+    }
+
 
     /* Sidebar Reset Button */
     [data-testid="stSidebar"] .stButton > button {
